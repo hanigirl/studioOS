@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import logoD from "@/public/assets/Logo-D.png"
 import { usePathname } from "next/navigation"
 import {
   Home,
@@ -40,7 +41,7 @@ export function TeamSwitcher() {
   return (
     <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
       <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary overflow-hidden p-1.5">
-        <Image src="/assets/Logo-D.png" alt="Studio OS" width={20} height={20} className="size-full object-contain" />
+        <Image src={logoD} alt="Studio OS" className="size-full object-contain" />
       </div>
       <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
         <span className="truncate font-semibold">Studio OS</span>
