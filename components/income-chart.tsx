@@ -44,11 +44,11 @@ const chartData = [
 const chartConfig = {
   thisYear: {
     label: "This Year",
-    color: "hsl(217, 91%, 60%)",
+    color: "var(--chart-1)",
   },
   lastYear: {
     label: "Last Year",
-    color: "hsl(213, 97%, 75%)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
