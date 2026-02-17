@@ -1,5 +1,7 @@
 import { DollarSign, Users, CreditCard, Activity } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
+import { IncomeChart } from "@/components/income-chart";
+import { RecentSales } from "@/components/recent-sales";
 
 export default function Home() {
   return (
@@ -34,6 +36,14 @@ export default function Home() {
           trend="up"
           icon={Activity}
         />
+      </div>
+      <div className="grid gap-4 lg:grid-cols-7">
+        <div className="lg:col-span-4">
+          <IncomeChart />
+        </div>
+        <div className="lg:col-span-3">
+          <RecentSales />
+        </div>
       </div>
     </div>
   );
