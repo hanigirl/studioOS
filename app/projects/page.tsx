@@ -1,58 +1,50 @@
-import { CheckCircle2, Clock, Eye, FolderOpen, Plus, SlidersHorizontal } from "lucide-react"
-import { StatCard } from "@/components/stat-card"
-import { ProjectsTable } from "@/components/projects-table"
+import { Plus, SlidersHorizontal } from "lucide-react"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
+import { AllProjectsTable } from "@/components/projects/all-projects-table"
+import { PulseSection } from "@/components/projects/pulse-section"
+import { danielProjects, overflowExtras } from "@/components/projects/data"
+
+// One surface owns the Project entity. Pulse section (triage) sits above the
+// table (management). Same `PulseProject[]` source of truth feeds both so the
+// two angles can never drift apart.
+//
+// Filter / New Project are placeholder buttons today — Dana will wire the
+// actions in Phase 2. They stay in the layout because the slot is permanent
+// and removing them would create a layout shift on Phase 2.
+//
+// See `.claude/agents/shared/lessons.md` —
+// "IA: ישות אחת = surface אחד" (2026-05-05).
 
 export default function ProjectsPage() {
+  const projects = [...danielProjects, ...overflowExtras]
+
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
-          <p className="text-sm text-muted-foreground">
-            All active projects across your clients
-          </p>
+    <TooltipProvider delayDuration={200}>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
+            <p className="text-sm text-muted-foreground">
+              All active projects across your clients
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <SlidersHorizontal />
+              Filter
+            </Button>
+            <Button size="sm">
+              <Plus />
+              New Project
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <SlidersHorizontal />
-            Filter
-          </Button>
-          <Button size="sm">
-            <Plus />
-            New Project
-          </Button>
-        </div>
-      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Active Projects"
-          value="12"
-          change="+3 this month"
-          icon={FolderOpen}
-        />
-        <StatCard
-          title="In Review"
-          value="4"
-          change="Awaiting client feedback"
-          icon={Eye}
-        />
-        <StatCard
-          title="Completed"
-          value="28"
-          change="+8 from last month"
-          icon={CheckCircle2}
-        />
-        <StatCard
-          title="Avg. Turnaround"
-          value="6.2d"
-          change="−1.3 days this quarter"
-          icon={Clock}
-        />
-      </div>
+        <PulseSection projects={projects} />
 
-      <ProjectsTable />
-    </div>
+        <AllProjectsTable projects={projects} />
+      </div>
+    </TooltipProvider>
   )
 }

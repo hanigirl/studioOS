@@ -1,3 +1,5 @@
+import Link from "next/link"
+import { ArrowUpRight } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -6,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const projects = [
@@ -56,11 +59,19 @@ const projects = [
 export function RecentSales() {
   return (
     <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
-      <CardHeader>
-        <CardTitle>Active Projects</CardTitle>
-        <CardDescription>
-          {projects.length} projects in progress.
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
+        <div className="space-y-1.5">
+          <CardTitle>Active Projects</CardTitle>
+          <CardDescription>
+            {projects.length} projects in progress.
+          </CardDescription>
+        </div>
+        <Button variant="outline" size="sm" asChild className="shrink-0">
+          <Link href="/projects">
+            View all projects
+            <ArrowUpRight aria-hidden="true" />
+          </Link>
+        </Button>
       </CardHeader>
       <CardContent>
         <div className="space-y-5">

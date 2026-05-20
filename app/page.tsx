@@ -2,11 +2,11 @@ import { CheckCircle, ListTodo, Star, Users } from "lucide-react";
 import { StatCard } from "@/components/stat-card";
 import { IncomeChart } from "@/components/income-chart";
 import { RecentSales } from "@/components/recent-sales";
+import { DashboardTabs } from "@/components/dashboard-tabs";
 
-export default function Home() {
+function OverviewContent() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+    <>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Tasks Completed"
@@ -37,6 +37,15 @@ export default function Home() {
         <RecentSales />
         <IncomeChart />
       </div>
+    </>
+  );
+}
+
+export default function Home() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+      <DashboardTabs overview={<OverviewContent />} />
     </div>
   );
 }
