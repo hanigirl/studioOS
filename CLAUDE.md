@@ -154,7 +154,7 @@ Two tiers, lined up by directory:
 | Tier | Location | Purpose | Examples |
 |---|---|---|---|
 | **Primitives** | `components/ui/` | shadcn/ui components wrapping Radix. Stateless, generic, design-system-only. | `Button`, `Card`, `Input`, `Tabs`, `Avatar`, `Sheet`, `Sidebar`, `Tooltip`, `Skeleton`, `Select`, `Separator`, `Chart` |
-| **Feature components** | `components/`, `components/<feature>/` | Composed product UI. May contain business logic and data. | `Header`, `AppSidebar`, `StatCard`, `KanbanBoard`, `RecentSales`, `IncomeChart`, `components/projects/*`, `components/dashboard-today/*` |
+| **Feature components** | `components/`, `components/<feature>/` | Composed product UI. May contain business logic and data. | `Header`, `AppSidebar`, `components/projects/*` (HealthBadge, ProjectPulseCard, PulseSection, AllProjectsTable) |
 
 ### Primitives — conventions
 
@@ -257,54 +257,56 @@ If a Figma component matches an existing primitive — **use it.** Don't recreat
 
 Feature components live one level up from `ui/`. Two organizational patterns are in use:
 
-1. **Flat** (top-level): `components/header.tsx`, `components/sidebar.tsx`, `components/stat-card.tsx`, `components/kanban-board.tsx`, `components/recent-sales.tsx`, `components/income-chart.tsx`, `components/team-card.tsx`, `components/dashboard-tabs.tsx`.
-2. **Feature folders** (newer pattern, for richer features): `components/projects/`, `components/dashboard-projects/`, `components/dashboard-today/`. Each folder may include `types.ts`, `data.ts`, and multiple view/state components.
+1. **Flat** (top-level): `components/header.tsx`, `components/sidebar.tsx`.
+2. **Feature folders** (preferred for richer features): `components/projects/`. Each folder may include `types.ts`, `data.ts`, and multiple view/section components.
 
 **Pattern for a feature folder:**
 
 ```
-components/dashboard-today/
-├── empty-state.tsx
-├── error-state.tsx
-├── loading-state.tsx
-├── next-up-card.tsx
-├── status-pill.tsx
-├── task-row.tsx
-├── today-content.tsx
-├── types.ts            ← TypeScript types for this feature
-└── zone-section.tsx
+components/projects/
+├── all-projects-table.tsx ← main table view
+├── project-pulse-card.tsx ← small card variant
+├── pulse-section.tsx      ← grouping component
+├── health-badge.tsx       ← inline status pill
+├── data.ts                ← mock/sample data
+└── types.ts               ← TypeScript types for this feature
 ```
 
-When you scaffold a new multi-state feature from Figma, use this folder layout (loading/empty/error states as siblings).
+When you scaffold a new multi-state feature from Figma, use this folder layout with siblings for each view + `types.ts` + (when needed) `data.ts`. Add `empty-state.tsx` / `error-state.tsx` / `loading-state.tsx` siblings if the feature has those states.
 
 **Example feature component (composition over primitives):**
 
 ```tsx
-// components/stat-card.tsx
-import type { LucideIcon } from "lucide-react"
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+// components/projects/health-badge.tsx
+import { AlertOctagon, AlertTriangle, CheckCircle2 } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { cn } from "@/lib/utils"
+import type { ProjectHealth } from "./types"
 
-interface StatCardProps {
-  title: string
-  value: string
-  change: string
-  icon: LucideIcon
+const styles: Record<ProjectHealth, string> = {
+  Healthy:   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  "At Risk": "bg-amber-100   text-amber-700   dark:bg-amber-900/30   dark:text-amber-400",
+  Critical:  "bg-red-100     text-red-700     dark:bg-red-900/30     dark:text-red-400",
 }
 
-export function StatCard({ title, value, change, icon: Icon }: StatCardProps) {
+const icons: Record<ProjectHealth, typeof CheckCircle2> = {
+  Healthy: CheckCircle2,
+  "At Risk": AlertTriangle,
+  Critical: AlertOctagon,
+}
+
+export function HealthBadge({ health, reason }: { health: ProjectHealth; reason: string }) {
+  const Icon = icons[health]
   return (
-    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
-      <CardHeader>
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <CardAction>
-          <Icon className="size-4 text-muted-foreground" />
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <p className="text-2xl font-bold">{value}</p>
-        <p className="text-xs text-primary">{change}</p>
-      </CardContent>
-    </Card>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium", styles[health])}>
+          <Icon className="size-3.5" aria-hidden />
+          <span>{health}</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top">{reason}</TooltipContent>
+    </Tooltip>
   )
 }
 ```
@@ -437,8 +439,8 @@ Use the `LucideIcon` type:
 ```tsx
 import type { LucideIcon } from "lucide-react"
 
-interface StatCardProps { icon: LucideIcon }
-function StatCard({ icon: Icon }: StatCardProps) { return <Icon className="size-4" /> }
+interface MetricCardProps { icon: LucideIcon }
+function MetricCard({ icon: Icon }: MetricCardProps) { return <Icon className="size-4" /> }
 ```
 
 ### Naming
@@ -531,24 +533,14 @@ studio-os-next/
 │   ├── layout.tsx          ← Root layout: SidebarProvider, AppSidebar, Header, fonts
 │   ├── page.tsx            ← / (Dashboard)
 │   ├── globals.css         ← ⚠ All design tokens live here
-│   ├── projects/           ← /projects
-│   ├── tasks/              ← /tasks
-│   ├── team/               ← /team
-│   ├── dashboard-projects/ ← /dashboard-projects (sub-experience)
-│   └── dashboard-today/    ← /dashboard-today (sub-experience)
+│   ├── projects/           ← /projects (only page with content; uses components/projects/*)
+│   ├── tasks/              ← /tasks (placeholder)
+│   └── team/               ← /team (placeholder)
 ├── components/
 │   ├── ui/                 ← shadcn/ui primitives (12 files)
 │   ├── projects/           ← Projects feature folder
-│   ├── dashboard-projects/ ← Dashboard / Projects view
-│   ├── dashboard-today/    ← Dashboard / Today view (with empty/error/loading states)
 │   ├── header.tsx          ← Top bar (search, theme toggle, user)
-│   ├── sidebar.tsx         ← App sidebar (mainNav + secondaryNav + TeamSwitcher)
-│   ├── dashboard-tabs.tsx
-│   ├── stat-card.tsx
-│   ├── kanban-board.tsx
-│   ├── income-chart.tsx
-│   ├── recent-sales.tsx
-│   └── team-card.tsx
+│   └── sidebar.tsx         ← App sidebar (mainNav + secondaryNav + TeamSwitcher)
 ├── hooks/
 │   └── use-mobile.ts
 ├── lib/
@@ -576,18 +568,15 @@ When a feature grows beyond one component, give it a folder under `components/<f
 - `data.ts` for mock / sample data (replace with fetchers when wired to a backend).
 - Small focused row/card components (`task-row.tsx`, `status-pill.tsx`, `next-up-card.tsx`).
 
-Example (`components/dashboard-today/`):
+Example (`components/projects/`):
 
 ```
-empty-state.tsx       ← <EmptyState />
-error-state.tsx       ← <ErrorState />
-loading-state.tsx     ← <LoadingState /> (uses Skeleton from ui/)
-today-content.tsx     ← main composed view
-zone-section.tsx      ← grouping component
-task-row.tsx          ← row primitive (feature-level)
-status-pill.tsx       ← small badge variant
-next-up-card.tsx      ← featured card
-types.ts              ← TodayTask, TodayZone, etc.
+all-projects-table.tsx ← main composed view (table)
+pulse-section.tsx      ← grouping component
+project-pulse-card.tsx ← compact card variant
+health-badge.tsx       ← inline status pill
+data.ts                ← mock data (PulseProject[])
+types.ts               ← PulseProject, ProjectHealth, etc.
 ```
 
 ### Layout composition

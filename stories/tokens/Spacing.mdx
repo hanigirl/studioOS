@@ -65,9 +65,8 @@ Page-level stacks between sections:
 
 ```tsx
 <div className="space-y-6">  {/* 24px between sections */}
-  <StatGrid />
-  <IncomeChart />
-  <RecentSales />
+  <PulseSection projects={projects} />
+  <AllProjectsTable projects={projects} />
 </div>
 ```
 
@@ -79,4 +78,4 @@ Cards and rows lift by `0.5` (2px) on hover with a 200ms cubic-bezier. Always co
 className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md"
 ```
 
-Used in `StatCard`, `RecentSales`, `IncomeChart`, `TeamCard`, `TaskRow`.
+Used in `ProjectPulseCard`, `AllProjectsTable` rows, and any feature-level card pattern.
