@@ -1,0 +1,90 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+Two font families loaded in `app/layout.tsx`:
+
+```tsx
+import { Geist, Geist_Mono } from "next/font/google";
+
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+```
+
+Exposed as Tailwind utilities: **`font-sans`** (Geist, default) and **`font-mono`** (Geist Mono).
+
+There is no custom type scale — use Tailwind's defaults. The combinations below are the observed patterns in the codebase.
+
+## Scale (Tailwind defaults)
+
+<div className="space-y-3 not-prose">
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-xs</span><span className="text-xs">12 / 16 — captions, meta, badges</span></div>
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-sm</span><span className="text-sm">14 / 20 — body, table cells, buttons</span></div>
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-base</span><span className="text-base">16 / 24 — long-form copy</span></div>
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-lg</span><span className="text-lg">18 / 28 — section subtitles</span></div>
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-xl</span><span className="text-xl">20 / 28 — card titles, modal titles</span></div>
+  <div className="flex items-baseline gap-6"><span className="w-20 text-xs text-muted-foreground">text-2xl</span><span className="text-2xl">24 / 32 — page titles, stat numbers</span></div>
+</div>
+
+## Patterns used in product
+
+### Page title
+```tsx
+<h1 className="text-2xl font-bold">Dashboard</h1>
+```
+<h1 className="text-2xl font-bold mt-2">Dashboard</h1>
+
+### Section title
+```tsx
+<h2 className="text-lg font-semibold leading-7">Active Projects</h2>
+```
+<h2 className="text-lg font-semibold leading-7 mt-2">Active Projects</h2>
+
+### Card title (compact)
+```tsx
+<CardTitle className="text-sm font-medium">Revenue</CardTitle>
+```
+<div className="text-sm font-medium mt-2">Revenue</div>
+
+### Body
+```tsx
+<p className="text-sm">Standard body text.</p>
+```
+<p className="text-sm mt-2">Standard body text.</p>
+
+### Caption / meta
+```tsx
+<p className="text-xs text-muted-foreground">Updated 5m ago</p>
+```
+<p className="text-xs text-muted-foreground mt-2">Updated 5m ago</p>
+
+### Stat number
+```tsx
+<p className="text-2xl font-bold">$12,540</p>
+```
+<p className="text-2xl font-bold mt-2">$12,540</p>
+
+## Font weight
+
+Use **only** these weights. Geist supports more, but the product surface uses these four:
+
+| Class | Weight | Where |
+|---|---|---|
+| `font-normal` | 400 | Body, captions |
+| `font-medium` | 500 | Buttons, table headers, links |
+| `font-semibold` | 600 | Card titles, section titles, modal titles |
+| `font-bold` | 700 | Page titles, stat numbers |
+
+## Monospace
+
+Use `font-mono` for code, tabular figures, and IDs.
+
+<code className="font-mono text-sm bg-muted px-2 py-1 rounded">case_2026_05_20</code>
+
+For numeric columns where alignment matters, prefer `tabular-nums` instead of switching the family:
+
+```tsx
+<span className="tabular-nums text-sm">$12,540.00</span>
+```
