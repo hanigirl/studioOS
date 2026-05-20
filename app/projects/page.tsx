@@ -31,6 +31,7 @@ export default function ProjectsPage() {
           value="12"
           change="+3 this month"
           icon={FolderOpen}
+          className="bg-red-500"
         />
         <StatCard
           title="In Review"
