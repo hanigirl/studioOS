@@ -1,0 +1,78 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { Home, FolderOpen, ListTodo, Users, Settings, Search, Moon, Sun, ChevronsUpDown, BarChart3, Instagram, Linkedin, Youtube, AlertOctagon, AlertTriangle, CheckCircle2, CalendarDays, ArrowUpRight } from 'lucide-react';
+
+<Meta title="Foundations/Icons" />
+
+# Icons
+
+**One library, one rule:** every icon in the product comes from [`lucide-react`](https://lucide.dev). No SVG sprite, no custom icon component. If a Figma vector doesn't have a clean lucide equivalent, ask before adding it.
+
+## Standard sizes
+
+| Class | Size | Where |
+|---|---|---|
+| `size-3` | 12 | Avatar status dot |
+| `size-3.5` | 14 | Inline badge icons (e.g. `HealthBadge`) |
+| `size-4` | 16 | **Default** — inside Button, inputs, sidebar, table cells |
+| `size-5` | 20 | Header action icons (theme toggle) |
+
+> `Button` auto-applies `size-4` to any unsized SVG child, so you usually don't need to set a size class on icons inside a button.
+
+## Sizes — visualized
+
+<div className="flex items-end gap-6 not-prose">
+  <div className="flex flex-col items-center gap-2"><Home className="size-3" /><span className="text-xs font-mono">size-3</span></div>
+  <div className="flex flex-col items-center gap-2"><Home className="size-3.5" /><span className="text-xs font-mono">size-3.5</span></div>
+  <div className="flex flex-col items-center gap-2"><Home className="size-4" /><span className="text-xs font-mono">size-4</span></div>
+  <div className="flex flex-col items-center gap-2"><Home className="size-5" /><span className="text-xs font-mono">size-5</span></div>
+  <div className="flex flex-col items-center gap-2"><Home className="size-6" /><span className="text-xs font-mono">size-6</span></div>
+</div>
+
+## Icons used in the product
+
+These are the lucide icons currently referenced. Add new ones by import, not by editing this list.
+
+<div className="grid grid-cols-6 gap-4 not-prose">
+  <div className="flex flex-col items-center gap-1 text-xs"><Home className="size-5" /><span className="text-muted-foreground">Home</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><FolderOpen className="size-5" /><span className="text-muted-foreground">FolderOpen</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><ListTodo className="size-5" /><span className="text-muted-foreground">ListTodo</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Users className="size-5" /><span className="text-muted-foreground">Users</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Settings className="size-5" /><span className="text-muted-foreground">Settings</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Search className="size-5" /><span className="text-muted-foreground">Search</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Moon className="size-5" /><span className="text-muted-foreground">Moon</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Sun className="size-5" /><span className="text-muted-foreground">Sun</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><ChevronsUpDown className="size-5" /><span className="text-muted-foreground">ChevronsUpDown</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><BarChart3 className="size-5" /><span className="text-muted-foreground">BarChart3</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><CalendarDays className="size-5" /><span className="text-muted-foreground">CalendarDays</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><ArrowUpRight className="size-5" /><span className="text-muted-foreground">ArrowUpRight</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Instagram className="size-5" /><span className="text-muted-foreground">Instagram</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Linkedin className="size-5" /><span className="text-muted-foreground">Linkedin</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><Youtube className="size-5" /><span className="text-muted-foreground">Youtube</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><CheckCircle2 className="size-5 text-emerald-700" /><span className="text-muted-foreground">CheckCircle2</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><AlertTriangle className="size-5 text-amber-700" /><span className="text-muted-foreground">AlertTriangle</span></div>
+  <div className="flex flex-col items-center gap-1 text-xs"><AlertOctagon className="size-5 text-red-700" /><span className="text-muted-foreground">AlertOctagon</span></div>
+</div>
+
+## Typed prop pattern
+
+When a component accepts an icon as a prop, type it as `LucideIcon`:
+
+```tsx
+import type { LucideIcon } from "lucide-react"
+
+interface StatCardProps {
+  icon: LucideIcon
+}
+
+function StatCard({ icon: Icon }: StatCardProps) {
+  return <Icon className="size-4 text-muted-foreground" />
+}
+```
+
+## Importing
+
+```tsx
+import { Home, FolderOpen, type LucideIcon } from "lucide-react"
+```
+
+Pascal-case the icon name exactly as it appears on [lucide.dev](https://lucide.dev). Do not alias unless you need to dodge a name clash.

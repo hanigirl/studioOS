@@ -1,0 +1,172 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Colors" />
+
+# Colors
+
+Tokens live in `app/globals.css` on `:root` (light) and `.dark` (dark). Every color uses the **OKLCH** color space. Tailwind v4's `@theme inline` block exposes each variable as a utility (e.g. `--primary` → `bg-primary`, `text-primary`).
+
+> **Never use raw hex or arbitrary Tailwind palette colors for product surfaces.** Always reference the semantic tokens below. The only exception is the status triad (emerald / amber / red) used by the health badge — see the bottom of this page.
+
+## Semantic surface tokens
+
+<div className="grid grid-cols-2 gap-3 not-prose">
+
+  <div className="rounded-lg border bg-background text-foreground p-4">
+    <div className="text-xs text-muted-foreground">--background / --foreground</div>
+    <div className="mt-2 text-sm">App canvas + body text</div>
+    <div className="mt-1 text-xs text-muted-foreground">bg-background · text-foreground</div>
+  </div>
+
+  <div className="rounded-lg border bg-card text-card-foreground p-4 shadow-sm">
+    <div className="text-xs text-muted-foreground">--card / --card-foreground</div>
+    <div className="mt-2 text-sm">Card surface</div>
+    <div className="mt-1 text-xs text-muted-foreground">bg-card · text-card-foreground</div>
+  </div>
+
+  <div className="rounded-lg border bg-popover text-popover-foreground p-4 shadow-sm">
+    <div className="text-xs text-muted-foreground">--popover / --popover-foreground</div>
+    <div className="mt-2 text-sm">Floating surfaces (Select, Tooltip)</div>
+    <div className="mt-1 text-xs text-muted-foreground">bg-popover · text-popover-foreground</div>
+  </div>
+
+  <div className="rounded-lg border bg-muted text-muted-foreground p-4">
+    <div className="text-xs">--muted / --muted-foreground</div>
+    <div className="mt-2 text-sm">Secondary text + low-emphasis fills</div>
+    <div className="mt-1 text-xs">bg-muted · text-muted-foreground</div>
+  </div>
+
+</div>
+
+## Action tokens
+
+<div className="grid grid-cols-2 gap-3 not-prose">
+
+  <div className="rounded-lg bg-primary text-primary-foreground p-4">
+    <div className="text-xs opacity-80">--primary / --primary-foreground</div>
+    <div className="mt-2 text-sm">Primary buttons, focus rings, sidebar logo</div>
+    <div className="mt-1 text-xs opacity-80">bg-primary · text-primary-foreground</div>
+  </div>
+
+  <div className="rounded-lg bg-secondary text-secondary-foreground p-4">
+    <div className="text-xs opacity-80">--secondary / --secondary-foreground</div>
+    <div className="mt-2 text-sm">Secondary actions</div>
+    <div className="mt-1 text-xs opacity-80">bg-secondary · text-secondary-foreground</div>
+  </div>
+
+  <div className="rounded-lg bg-accent text-accent-foreground p-4">
+    <div className="text-xs opacity-80">--accent / --accent-foreground</div>
+    <div className="mt-2 text-sm">Hover state for ghost buttons + menu items</div>
+    <div className="mt-1 text-xs opacity-80">bg-accent · text-accent-foreground</div>
+  </div>
+
+  <div className="rounded-lg bg-destructive text-white p-4">
+    <div className="text-xs opacity-80">--destructive</div>
+    <div className="mt-2 text-sm">Delete, danger, invalid state</div>
+    <div className="mt-1 text-xs opacity-80">bg-destructive · text-destructive</div>
+  </div>
+
+</div>
+
+## Form tokens
+
+<div className="grid grid-cols-3 gap-3 not-prose">
+
+  <div className="rounded-lg border p-4">
+    <div className="text-xs text-muted-foreground">--border</div>
+    <div className="mt-2 text-sm">Default border</div>
+    <div className="mt-1 text-xs text-muted-foreground">border</div>
+  </div>
+
+  <div className="rounded-lg border-input border p-4">
+    <div className="text-xs text-muted-foreground">--input</div>
+    <div className="mt-2 text-sm">Input borders</div>
+    <div className="mt-1 text-xs text-muted-foreground">border-input</div>
+  </div>
+
+  <div className="rounded-lg border p-4 ring-3 ring-ring/50">
+    <div className="text-xs text-muted-foreground">--ring</div>
+    <div className="mt-2 text-sm">Focus ring (ring-3 ring-ring/50)</div>
+    <div className="mt-1 text-xs text-muted-foreground">ring-ring</div>
+  </div>
+
+</div>
+
+## Sidebar tokens
+
+Sidebar has its own surface so it can stay calm when the page is loud.
+
+<div className="grid grid-cols-2 gap-3 not-prose">
+
+  <div className="rounded-lg bg-sidebar text-sidebar-foreground border p-4">
+    <div className="text-xs opacity-70">--sidebar / --sidebar-foreground</div>
+    <div className="mt-2 text-sm">Sidebar surface</div>
+    <div className="mt-1 text-xs opacity-70">bg-sidebar · text-sidebar-foreground</div>
+  </div>
+
+  <div className="rounded-lg bg-sidebar-accent text-sidebar-accent-foreground p-4">
+    <div className="text-xs opacity-70">--sidebar-accent</div>
+    <div className="mt-2 text-sm">Active / hovered sidebar item</div>
+    <div className="mt-1 text-xs opacity-70">bg-sidebar-accent · text-sidebar-accent-foreground</div>
+  </div>
+
+  <div className="rounded-lg bg-sidebar-primary text-sidebar-primary-foreground p-4">
+    <div className="text-xs opacity-80">--sidebar-primary</div>
+    <div className="mt-2 text-sm">Sidebar logo / brand mark</div>
+    <div className="mt-1 text-xs opacity-80">bg-sidebar-primary · text-sidebar-primary-foreground</div>
+  </div>
+
+  <div className="rounded-lg border-2 border-sidebar-border p-4">
+    <div className="text-xs text-muted-foreground">--sidebar-border / --sidebar-ring</div>
+    <div className="mt-2 text-sm">Sidebar dividers + focus rings</div>
+    <div className="mt-1 text-xs text-muted-foreground">border-sidebar-border</div>
+  </div>
+
+</div>
+
+## Chart tokens
+
+Five categorical colors for data viz. Reference as `--chart-1` … `--chart-5` (use via recharts `fill="var(--chart-1)"` or Tailwind `fill-chart-1`).
+
+<div className="grid grid-cols-5 gap-3 not-prose">
+  <div className="aspect-square rounded-lg" style={{ background: 'var(--chart-1)' }} />
+  <div className="aspect-square rounded-lg" style={{ background: 'var(--chart-2)' }} />
+  <div className="aspect-square rounded-lg" style={{ background: 'var(--chart-3)' }} />
+  <div className="aspect-square rounded-lg" style={{ background: 'var(--chart-4)' }} />
+  <div className="aspect-square rounded-lg" style={{ background: 'var(--chart-5)' }} />
+</div>
+
+## Status colors (NOT tokens — Tailwind palette)
+
+The product uses three statuses with fixed semantics. These live **outside** the token system, directly on the Tailwind palette. Always use this exact triad — no `green-*` or `yellow-*` substitutes.
+
+<div className="grid grid-cols-3 gap-3 not-prose">
+
+  <div className="rounded-lg border p-4">
+    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+      Healthy
+    </span>
+    <div className="mt-2 text-xs text-muted-foreground">emerald-100 / emerald-700</div>
+  </div>
+
+  <div className="rounded-lg border p-4">
+    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+      At Risk
+    </span>
+    <div className="mt-2 text-xs text-muted-foreground">amber-100 / amber-700</div>
+  </div>
+
+  <div className="rounded-lg border p-4">
+    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+      Critical
+    </span>
+    <div className="mt-2 text-xs text-muted-foreground">red-100 / red-700</div>
+  </div>
+
+</div>
+
+## Adding a new token
+
+1. Add the variable to **both** `:root` and `.dark` in `app/globals.css`.
+2. Add the alias inside `@theme inline { --color-<name>: var(--<name>); }`.
+3. Use the resulting `bg-<name>` / `text-<name>` utility — never reach into `var(--...)` manually outside the token file.

@@ -1,0 +1,82 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Foundations/Spacing" />
+
+# Spacing
+
+No custom spacing scale — Tailwind defaults only (`0.5` → `2px`, `1` → `4px`, `2` → `8px`, `4` → `16px`, etc.).
+
+## Observed product rhythm
+
+| Token | px | Where |
+|---|---|---|
+| `gap-1` / `p-1` | 4 | Icon → label gap inside compact buttons |
+| `gap-2` / `p-2` | 8 | Sidebar menu items, badge inner padding |
+| `gap-3` | 12 | Card list rows (e.g. project row in RecentSales) |
+| `gap-4` / `p-4` | 16 | Page padding on mobile, card-to-card grid gap, Sheet header padding |
+| `p-6` | 24 | Card body padding (`CardHeader`, `CardContent`, `CardFooter`), page padding on desktop |
+| `space-y-5` | 20 | Vertical rhythm between rows in a card list |
+| `space-y-6` | 24 | Vertical rhythm between sections on a page |
+| `max-w-screen-xl mx-auto` | — | Page constrainer (~1280px) |
+
+## Page layout pattern
+
+Every page renders inside the root frame:
+
+```tsx
+// app/layout.tsx
+<div className="flex-1 p-4 md:p-6 max-w-screen-xl mx-auto w-full">
+  {children}
+</div>
+```
+
+So a page body never sets its own outer padding — it inherits `p-4` on mobile, `p-6` on desktop.
+
+## Card internal rhythm
+
+```tsx
+<Card>                                  {/* py-6, rounded-xl, border, shadow-sm */}
+  <CardHeader>                          {/* gap-2, px-6 */}
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>                         {/* px-6 */}
+    Body
+  </CardContent>
+  <CardFooter className="border-t">     {/* px-6, +pt-6 when border-t */}
+    Footer
+  </CardFooter>
+</Card>
+```
+
+The sub-parts already encode the right padding — you almost never need to override them.
+
+## Stack rhythm
+
+Vertical stacks inside a card:
+
+```tsx
+<div className="space-y-5">  {/* 20px between rows */}
+  {rows.map(...)}
+</div>
+```
+
+Page-level stacks between sections:
+
+```tsx
+<div className="space-y-6">  {/* 24px between sections */}
+  <StatGrid />
+  <IncomeChart />
+  <RecentSales />
+</div>
+```
+
+## Hover lift (standard motion)
+
+Cards and rows lift by `0.5` (2px) on hover with a 200ms cubic-bezier. Always copy this exact set:
+
+```tsx
+className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md"
+```
+
+Used in `StatCard`, `RecentSales`, `IncomeChart`, `TeamCard`, `TaskRow`.

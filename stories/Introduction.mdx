@@ -1,0 +1,60 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Studio OS Design System
+
+Welcome. This is the living reference for every visual surface in Studio OS — tokens, primitives, and the feature components built on top of them.
+
+## How to use this Storybook
+
+The sidebar is organized in the same order you should think about UI:
+
+1. **Foundations** — the design tokens (colors, typography, radius, spacing, icons). Start here. Every component below uses these tokens; never invent your own.
+2. **Primitives** — the 12 `components/ui/*` building blocks. These are shadcn/ui (new-york) wrappers around Radix. Use them before composing anything new.
+3. **Features** — product-specific components (StatCard, HealthBadge, TeamCard, etc.) composed from the primitives.
+
+Toggle **light / dark** in the toolbar (paint-roller icon) to verify any story in both themes — every token already swaps automatically, so most stories need no per-theme variant.
+
+## Three rules you cannot break
+
+1. **Use tokens, not hex.** `bg-primary`, `text-muted-foreground`, `border` — never `#3b82f6` or `bg-slate-500`.
+2. **Reuse primitives.** If the design has a button, use `Button` from `@/components/ui/button`. Extend the existing `cva` variants — never fork the component.
+3. **Compose with `cn()`.** Import from `@/lib/utils`. Never concatenate className strings manually.
+
+## Stack at a glance
+
+| | |
+|---|---|
+| Framework | Next.js 16 App Router (static export) |
+| UI | React 19 + TypeScript strict |
+| Styling | Tailwind CSS v4, tokens in `app/globals.css` via `@theme inline` |
+| Primitives | shadcn/ui (`new-york`) + radix-ui (single-package import) |
+| Icons | lucide-react |
+| Charts | recharts (wrapped in `components/ui/chart.tsx`) |
+| Drag & drop | @dnd-kit |
+| Variants | class-variance-authority (`cva`) |
+| className merge | clsx + tailwind-merge via `cn()` |
+
+## Where things live
+
+```
+app/globals.css           ← all design tokens (CSS vars + @theme)
+components/ui/            ← 12 primitives (shadcn)
+components/<feature>/     ← multi-state feature folders
+components/*.tsx          ← single-file composed components
+lib/utils.ts              ← cn()
+public/                   ← static assets
+```
+
+## Companion docs
+
+Open `CLAUDE.md` at the repo root for the full integration rules (Figma → code mapping, do/don't reference, Code Connect notes).
+
+## What's in this Storybook
+
+- **5 token reference pages** under Foundations
+- **12 primitive component pages** under Primitives, each with every variant × size × state
+- **Feature component pages** showing real product compositions
+
+Every story renders against the actual Tailwind v4 build, so what you see here is exactly what ships to production.
