@@ -2,19 +2,8 @@ import { Plus, SlidersHorizontal } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import { AllProjectsTable } from "@/components/projects/all-projects-table"
-import { PulseSection } from "@/components/projects/pulse-section"
+import { OverviewStats } from "@/components/projects/overview-stats"
 import { danielProjects, overflowExtras } from "@/components/projects/data"
-
-// One surface owns the Project entity. Pulse section (triage) sits above the
-// table (management). Same `PulseProject[]` source of truth feeds both so the
-// two angles can never drift apart.
-//
-// Filter / New Project are placeholder buttons today — Dana will wire the
-// actions in Phase 2. They stay in the layout because the slot is permanent
-// and removing them would create a layout shift on Phase 2.
-//
-// See `.claude/agents/shared/lessons.md` —
-// "IA: ישות אחת = surface אחד" (2026-05-05).
 
 export default function ProjectsPage() {
   const projects = [...danielProjects, ...overflowExtras]
@@ -41,7 +30,7 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        <PulseSection projects={projects} />
+        <OverviewStats />
 
         <AllProjectsTable projects={projects} />
       </div>
