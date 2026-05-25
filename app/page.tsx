@@ -13,6 +13,7 @@ export default function Home() {
           value="34"
           change="+12% from last week"
           icon={CheckCircle}
+          className="bg-red-500"
         />
         <StatCard
           title="To Do"
