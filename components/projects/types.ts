@@ -53,4 +53,5 @@ export interface PulseProject {
   tasksTotal: number
   nextTasks: NextTask[]
   healthReason: string
+  figmaUrl?: string
 }

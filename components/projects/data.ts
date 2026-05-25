@@ -24,6 +24,7 @@ export const danielProjects: PulseProject[] = [
     tasksDone: 8,
     tasksTotal: 14,
     healthReason: "On track · last client message 1 day ago",
+    figmaUrl: "https://figma.com/file/placeholder-wix-app-redesign",
     nextTasks: [
       { id: "t6", title: "Redesign profile settings screen", status: "In Progress", due: "Apr 10", priority: "High", assignee: DANIEL },
       { id: "t10", title: "Checkout flow hand-off pack", status: "Approved", due: "Apr 9", priority: "High", assignee: DANIEL },
@@ -44,6 +45,7 @@ export const danielProjects: PulseProject[] = [
     tasksDone: 18,
     tasksTotal: 18,
     healthReason: "3 tasks overdue · last client message 4 days ago",
+    figmaUrl: "https://figma.com/file/placeholder-slack-dashboard-ui",
     nextTasks: [
       { id: "t11", title: "Navigation shell components", status: "In Dev", due: "Apr 4", priority: "Medium", assignee: JON },
       { id: "t9", title: "Analytics chart components", status: "In Review", due: "Apr 7", priority: "Medium", assignee: DANIEL },
@@ -64,6 +66,7 @@ export const danielProjects: PulseProject[] = [
     tasksDone: 6,
     tasksTotal: 15,
     healthReason: "Deadline in 2 days · 9 tasks remaining",
+    figmaUrl: "https://figma.com/file/placeholder-zoom-landing-page",
     nextTasks: [
       { id: "t2", title: "Collect references for pricing page", status: "Backlog", due: "Apr 25", priority: "Low", assignee: MAYA },
       { id: "z1", title: "Hero variant explorations", status: "In Progress", due: "Apr 28", priority: "High", assignee: DANIEL },
@@ -88,6 +91,7 @@ export const overflowExtras: PulseProject[] = [
     tasksDone: 12,
     tasksTotal: 12,
     healthReason: "Final review pending · client demo tomorrow",
+    figmaUrl: "https://figma.com/file/placeholder-monday-brand-identity",
     nextTasks: [
       { id: "t8", title: "Final logo presentation", status: "In Review", due: "Apr 5", priority: "High", assignee: ADA },
       { id: "t13", title: "Color tokens audit", status: "Done", due: "Mar 28", priority: "Low", assignee: ADA },
@@ -108,6 +112,7 @@ export const overflowExtras: PulseProject[] = [
     tasksDone: 4,
     tasksTotal: 10,
     healthReason: "On track · plenty of runway",
+    figmaUrl: "https://figma.com/file/placeholder-fiverr-marketing-kit",
     nextTasks: [
       { id: "t7", title: "Build email header templates", status: "In Progress", due: "Apr 15", priority: "Medium", assignee: MAYA },
       { id: "f1", title: "Story templates v2", status: "To Do", due: "Apr 16", priority: "Medium", assignee: ADA },
@@ -128,6 +133,7 @@ export const overflowExtras: PulseProject[] = [
     tasksDone: 2,
     tasksTotal: 8,
     healthReason: "Just kicked off · first review in 2 weeks",
+    figmaUrl: "https://figma.com/file/placeholder-meta-social-templates",
     nextTasks: [
       { id: "t4", title: "Define empty states for feed", status: "To Do", due: "Apr 12", priority: "Medium", assignee: JON },
       { id: "m1", title: "Story templates moodboard", status: "Backlog", due: "Apr 14", priority: "Low", assignee: ADA },
