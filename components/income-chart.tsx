@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardAction,
@@ -82,7 +82,7 @@ export function IncomeChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[350px] w-full">
-          <BarChart data={filteredData}>
+          <LineChart data={filteredData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -96,22 +96,23 @@ export function IncomeChart() {
               tickMargin={8}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
             />
-            <ChartTooltip
-              content={<ChartTooltipContent />}
-              cursor={false}
-            />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Bar
+            <Line
               dataKey="thisYear"
-              fill="var(--color-thisYear)"
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              stroke="var(--color-thisYear)"
+              strokeWidth={2}
+              dot={false}
             />
-            <Bar
+            <Line
               dataKey="lastYear"
-              fill="var(--color-lastYear)"
-              radius={[4, 4, 0, 0]}
+              type="monotone"
+              stroke="var(--color-lastYear)"
+              strokeWidth={2}
+              dot={false}
             />
-          </BarChart>
+          </LineChart>
         </ChartContainer>
       </CardContent>
     </Card>

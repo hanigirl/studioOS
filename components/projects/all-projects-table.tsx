@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { MoreHorizontal } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -16,7 +17,6 @@ import {
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
-import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
 
 const statusStyles: Record<ProjectStatus, string> = {
@@ -69,10 +69,10 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All projects</CardTitle>
+        <CardTitle>Active Projects</CardTitle>
         <CardDescription>
-          {projects.length} project{projects.length === 1 ? "" : "s"} across
-          your clients
+          {projects.length} project{projects.length === 1 ? "" : "s"} in
+          progress across {projects.length} client{projects.length === 1 ? "" : "s"}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
@@ -108,22 +108,11 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           })}
         </div>
 
-        {/* Table */}
+        {/* Rows */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-3 text-left font-medium">Project</th>
-                <th className="px-3 py-3 text-left font-medium">Client</th>
-                <th className="px-3 py-3 text-left font-medium">Status</th>
-                <th className="px-3 py-3 text-left font-medium">Team</th>
-                <th className="px-3 py-3 text-left font-medium">Due Date</th>
-                <th className="px-3 py-3 text-left font-medium">Tasks</th>
-              </tr>
-            </thead>
             <tbody>
               {filtered.map((p, i) => {
-                const health = computeHealth(p)
                 const isOverdue = p.overdue || p.daysToDeadline < 0
                 return (
                   <tr
@@ -133,12 +122,12 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                       i < filtered.length - 1 && "border-b border-border"
                     )}
                   >
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
+                    <td className="px-6 py-4 w-[200px]">
+                      <div className="flex flex-col gap-0.5">
                         <span className="font-semibold leading-tight">
                           {p.name}
                         </span>
-                        <span className="text-xs text-muted-foreground mt-0.5">
+                        <span className="text-xs text-muted-foreground">
                           {p.subtitle}
                         </span>
                       </div>
@@ -153,17 +142,14 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                       </div>
                     </td>
                     <td className="px-3 py-4">
-                      <div className="inline-flex items-center gap-2">
-                        <HealthDot health={health} />
-                        <span
-                          className={cn(
-                            "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
-                            statusStyles[p.status]
-                          )}
-                        >
-                          {p.status}
-                        </span>
-                      </div>
+                      <span
+                        className={cn(
+                          "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          statusStyles[p.status]
+                        )}
+                      >
+                        {p.status}
+                      </span>
                     </td>
                     <td className="px-3 py-4">
                       <AvatarGroup>
@@ -190,6 +176,14 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                     </td>
                     <td className="px-3 py-4 text-sm text-muted-foreground tabular-nums">
                       {p.tasksDone}/{p.tasksTotal}
+                    </td>
+                    <td className="px-3 py-4 w-10">
+                      <button
+                        type="button"
+                        className="flex size-8 items-center justify-center rounded-md opacity-0 transition-opacity hover:bg-accent group-hover:opacity-100"
+                      >
+                        <MoreHorizontal className="size-4 text-muted-foreground" />
+                      </button>
                     </td>
                   </tr>
                 )
