@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { MoreHorizontal } from "lucide-react"
+import { ChevronDown, ChevronUp, ChevronsUpDown, MoreHorizontal, Search } from "lucide-react"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import {
   Avatar,
   AvatarFallback,
@@ -41,6 +43,17 @@ const tabs = [
 
 type TabValue = (typeof tabs)[number]["value"]
 
+type SortCol = "name" | "status" | "due"
+type SortDir = "asc" | "desc"
+
+const STATUS_ORDER: Record<ProjectStatus, number> = {
+  Discovery: 0,
+  Design: 1,
+  Review: 2,
+  Handoff: 3,
+  Done: 4,
+}
+
 /**
  * The management view of the Project entity inside `/projects`. Reads the
  * canonical `PulseProject[]` so this table and `<PulseSection>` above it can
@@ -55,16 +68,72 @@ type TabValue = (typeof tabs)[number]["value"]
  */
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
+  const [search, setSearch] = useState("")
+  const [sortCol, setSortCol] = useState<SortCol | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>("asc")
 
-  const filtered =
-    active === "all"
-      ? projects
-      : projects.filter((p) => p.status === active)
+  function handleSort(col: SortCol) {
+    if (sortCol === col) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+    } else {
+      setSortCol(col)
+      setSortDir("asc")
+    }
+  }
+
+  const filtered = projects.filter((p) => {
+    const q = search.toLowerCase()
+    const matchesSearch =
+      q === "" ||
+      p.name.toLowerCase().includes(q) ||
+      p.client.toLowerCase().includes(q)
+    const matchesTab = active === "all" || p.status === active
+    return matchesSearch && matchesTab
+  })
 
   const countFor = (v: TabValue) =>
     v === "all"
       ? projects.length
       : projects.filter((p) => p.status === v).length
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (!sortCol) return 0
+    let cmp = 0
+    if (sortCol === "name") cmp = a.name.localeCompare(b.name)
+    else if (sortCol === "status") cmp = STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
+    else if (sortCol === "due") cmp = a.daysToDeadline - b.daysToDeadline
+    return sortDir === "asc" ? cmp : -cmp
+  })
+
+  function SortHeader({
+    label,
+    col,
+    active,
+    dir,
+    onSort,
+  }: {
+    label: string
+    col: SortCol
+    active: SortCol | null
+    dir: SortDir
+    onSort: (col: SortCol) => void
+  }) {
+    const isActive = active === col
+    const Icon = isActive ? (dir === "asc" ? ChevronUp : ChevronDown) : ChevronsUpDown
+    return (
+      <button
+        type="button"
+        onClick={() => onSort(col)}
+        className={cn(
+          "inline-flex items-center gap-1 text-xs font-medium transition-colors",
+          isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+        )}
+      >
+        {label}
+        <Icon className="size-3.5" aria-hidden />
+      </button>
+    )
+  }
 
   return (
     <Card>
@@ -74,6 +143,18 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           {projects.length} project{projects.length === 1 ? "" : "s"} in
           progress across {projects.length} client{projects.length === 1 ? "" : "s"}
         </CardDescription>
+        <CardAction>
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search projects or clients..."
+              className="h-8 w-52 pl-8 text-sm"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </CardAction>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
         {/* Tabs filter by status — same status axis the kanban uses. */}
@@ -111,15 +192,32 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         {/* Rows */}
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="px-6 py-2 text-left w-[200px]">
+                  <SortHeader label="Name" col="name" active={sortCol} dir={sortDir} onSort={handleSort} />
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Client</th>
+                <th className="px-3 py-2 text-left">
+                  <SortHeader label="Status" col="status" active={sortCol} dir={sortDir} onSort={handleSort} />
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Team</th>
+                <th className="px-3 py-2 text-left">
+                  <SortHeader label="Due" col="due" active={sortCol} dir={sortDir} onSort={handleSort} />
+                </th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Tasks</th>
+                <th className="w-10" />
+              </tr>
+            </thead>
             <tbody>
-              {filtered.map((p, i) => {
+              {sorted.map((p, i) => {
                 const isOverdue = p.overdue || p.daysToDeadline < 0
                 return (
                   <tr
                     key={p.id}
                     className={cn(
                       "group hover:bg-muted/40 transition-colors",
-                      i < filtered.length - 1 && "border-b border-border"
+                      i < sorted.length - 1 && "border-b border-border"
                     )}
                   >
                     <td className="px-6 py-4 w-[200px]">
