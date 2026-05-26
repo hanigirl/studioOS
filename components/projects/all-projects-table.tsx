@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react"
+import { ChevronUp, ChevronDown, ChevronsUpDown, Search } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -17,6 +17,12 @@ import {
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { useTableSort, type SortDir } from "@/hooks/use-table-sort"
+import { Input } from "@/components/ui/input"
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip"
 import {
   Select,
   SelectContent,
@@ -129,6 +135,7 @@ function SortTh({
  */
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
+  const [query, setQuery] = useState("")
 
   const filtered = useMemo(
     () =>
@@ -138,8 +145,18 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     [projects, active]
   )
 
+  const searchFiltered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return filtered
+    return filtered.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.client.toLowerCase().includes(q)
+    )
+  }, [filtered, query])
+
   const { sorted, sortKey, sortDir, toggle, set } = useTableSort<PulseProject, SortKey>(
-    filtered,
+    searchFiltered,
     comparators
   )
 
@@ -168,9 +185,9 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
-        {/* Tabs + sort dropdown */}
-        <div className="flex items-center justify-between gap-4 px-6">
-          <div className="flex flex-wrap gap-2">
+        {/* Row 1: tabs (left) + search (right), bottom-aligned */}
+        <div className="flex items-end gap-4 px-6">
+          <div className="flex flex-wrap gap-2 flex-1">
             {tabs.map((t) => {
               const isActive = active === t.value
               return (
@@ -201,8 +218,21 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             })}
           </div>
 
+          <div className="relative shrink-0">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground pointer-events-none" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search project or client…"
+              className="h-8 w-[220px] pl-8 text-sm"
+            />
+          </div>
+        </div>
+
+        {/* Row 2: sort (right only) */}
+        <div className="flex justify-end px-6">
           <Select value={sortValue} onValueChange={handleSortChange}>
-            <SelectTrigger size="sm" className="w-[168px] shrink-0">
+            <SelectTrigger size="sm" className="w-[220px]">
               <SelectValue placeholder="Sort by…" />
             </SelectTrigger>
             <SelectContent align="end">
@@ -301,13 +331,34 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                     <td className="px-3 py-4">
                       <AvatarGroup>
                         {p.team.map((m) => (
-                          <Avatar key={m.name} size="sm">
-                            <AvatarFallback
-                              className={cn("text-white", m.color)}
+                          <Tooltip key={m.name}>
+                            <TooltipTrigger asChild>
+                              <Avatar size="sm" className="cursor-pointer">
+                                <AvatarFallback
+                                  className={cn("text-white", m.color)}
+                                >
+                                  {m.initials}
+                                </AvatarFallback>
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent
+                              side="top"
+                              sideOffset={6}
+                              className="bg-card text-card-foreground border border-border shadow-md p-2.5 rounded-lg flex items-center gap-2.5"
                             >
-                              {m.initials}
-                            </AvatarFallback>
-                          </Avatar>
+                              <div
+                                className={cn(
+                                  "size-7 rounded-full flex items-center justify-center text-white text-[11px] font-semibold shrink-0",
+                                  m.color
+                                )}
+                              >
+                                {m.initials}
+                              </div>
+                              <span className="text-sm font-medium text-foreground whitespace-nowrap">
+                                {m.name}
+                              </span>
+                            </TooltipContent>
+                          </Tooltip>
                         ))}
                       </AvatarGroup>
                     </td>
