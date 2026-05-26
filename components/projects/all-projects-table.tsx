@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
+import { ChevronUp, ChevronDown, ChevronsUpDown } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -15,6 +16,7 @@ import {
   AvatarGroup,
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { useTableSort, type SortDir } from "@/hooks/use-table-sort"
 import { computeHealth } from "./data"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
@@ -31,6 +33,14 @@ const statusStyles: Record<ProjectStatus, string> = {
   Done: "bg-muted text-muted-foreground",
 }
 
+const STATUS_ORDER: Record<ProjectStatus, number> = {
+  Discovery: 0,
+  Design: 1,
+  Review: 2,
+  Handoff: 3,
+  Done: 4,
+}
+
 const tabs = [
   { label: "All", value: "all" as const },
   { label: "Discovery", value: "Discovery" as const },
@@ -40,6 +50,59 @@ const tabs = [
 ]
 
 type TabValue = (typeof tabs)[number]["value"]
+type SortKey = "name" | "status" | "due"
+
+const comparators: Record<SortKey, (a: PulseProject, b: PulseProject) => number> = {
+  name:   (a, b) => a.name.localeCompare(b.name),
+  status: (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
+  due:    (a, b) => a.daysToDeadline - b.daysToDeadline,
+}
+
+function SortIcon({ column, sortKey, sortDir }: {
+  column: SortKey
+  sortKey: SortKey | null
+  sortDir: SortDir
+}) {
+  const isActive = sortKey === column
+  if (isActive && sortDir === "asc")  return <ChevronUp  className="size-3 shrink-0" />
+  if (isActive && sortDir === "desc") return <ChevronDown className="size-3 shrink-0" />
+  return (
+    <ChevronsUpDown className="size-3 shrink-0 opacity-0 group-hover:opacity-50 transition-opacity" />
+  )
+}
+
+function SortTh({
+  label,
+  column,
+  sortKey,
+  sortDir,
+  onSort,
+  className,
+}: {
+  label: string
+  column: SortKey
+  sortKey: SortKey | null
+  sortDir: SortDir
+  onSort: (k: SortKey) => void
+  className?: string
+}) {
+  const isActive = sortKey === column
+  return (
+    <th className={cn("py-3 font-medium", className)}>
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className={cn(
+          "group inline-flex items-center gap-1 transition-colors hover:text-foreground",
+          isActive ? "text-foreground" : "text-muted-foreground"
+        )}
+      >
+        {label}
+        <SortIcon column={column} sortKey={sortKey} sortDir={sortDir} />
+      </button>
+    </th>
+  )
+}
 
 /**
  * The management view of the Project entity inside `/projects`. Reads the
@@ -56,10 +119,18 @@ type TabValue = (typeof tabs)[number]["value"]
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
 
-  const filtered =
-    active === "all"
-      ? projects
-      : projects.filter((p) => p.status === active)
+  const filtered = useMemo(
+    () =>
+      active === "all"
+        ? projects
+        : projects.filter((p) => p.status === active),
+    [projects, active]
+  )
+
+  const { sorted, sortKey, sortDir, toggle } = useTableSort<PulseProject, SortKey>(
+    filtered,
+    comparators
+  )
 
   const countFor = (v: TabValue) =>
     v === "all"
@@ -76,7 +147,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
-        {/* Tabs filter by status — same status axis the kanban uses. */}
+        {/* Tabs filter by status */}
         <div className="flex flex-wrap gap-2 px-6">
           {tabs.map((t) => {
             const isActive = active === t.value
@@ -113,16 +184,37 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-3 text-left font-medium">Project</th>
+                <SortTh
+                  label="Project"
+                  column="name"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggle}
+                  className="px-6"
+                />
                 <th className="px-3 py-3 text-left font-medium">Client</th>
-                <th className="px-3 py-3 text-left font-medium">Status</th>
+                <SortTh
+                  label="Status"
+                  column="status"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggle}
+                  className="px-3"
+                />
                 <th className="px-3 py-3 text-left font-medium">Team</th>
-                <th className="px-3 py-3 text-left font-medium">Due Date</th>
+                <SortTh
+                  label="Due Date"
+                  column="due"
+                  sortKey={sortKey}
+                  sortDir={sortDir}
+                  onSort={toggle}
+                  className="px-3"
+                />
                 <th className="px-3 py-3 text-left font-medium">Tasks</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, i) => {
+              {sorted.map((p, i) => {
                 const health = computeHealth(p)
                 const isOverdue = p.overdue || p.daysToDeadline < 0
                 return (
@@ -130,7 +222,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                     key={p.id}
                     className={cn(
                       "group hover:bg-muted/40 transition-colors",
-                      i < filtered.length - 1 && "border-b border-border"
+                      i < sorted.length - 1 && "border-b border-border"
                     )}
                   >
                     <td className="px-6 py-4">
