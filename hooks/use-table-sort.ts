@@ -29,6 +29,10 @@ export function useTableSort<T, K extends string>(
     })
   }
 
+  function set(key: K | null, dir: SortDir) {
+    setSort({ key, dir })
+  }
+
   const sorted = useMemo(() => {
     if (!sort.key) return items
     const cmp = comparators[sort.key]
@@ -37,5 +41,5 @@ export function useTableSort<T, K extends string>(
     )
   }, [items, sort, comparators])
 
-  return { sorted, sortKey: sort.key, sortDir: sort.dir, toggle }
+  return { sorted, sortKey: sort.key, sortDir: sort.dir, toggle, set }
 }

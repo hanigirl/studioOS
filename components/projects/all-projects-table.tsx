@@ -17,6 +17,14 @@ import {
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { useTableSort, type SortDir } from "@/hooks/use-table-sort"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { computeHealth } from "./data"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
@@ -50,12 +58,15 @@ const tabs = [
 ]
 
 type TabValue = (typeof tabs)[number]["value"]
-type SortKey = "name" | "status" | "due"
+type SortKey = "name" | "client" | "status" | "team" | "due" | "tasks"
 
 const comparators: Record<SortKey, (a: PulseProject, b: PulseProject) => number> = {
   name:   (a, b) => a.name.localeCompare(b.name),
+  client: (a, b) => a.client.localeCompare(b.client),
   status: (a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status],
+  team:   (a, b) => a.team.length - b.team.length,
   due:    (a, b) => a.daysToDeadline - b.daysToDeadline,
+  tasks:  (a, b) => (a.tasksDone / (a.tasksTotal || 1)) - (b.tasksDone / (b.tasksTotal || 1)),
 }
 
 function SortIcon({ column, sortKey, sortDir }: {
@@ -88,7 +99,7 @@ function SortTh({
 }) {
   const isActive = sortKey === column
   return (
-    <th className={cn("py-3 font-medium", className)}>
+    <th className={cn("py-3 text-left font-medium", className)}>
       <button
         type="button"
         onClick={() => onSort(column)}
@@ -127,10 +138,20 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     [projects, active]
   )
 
-  const { sorted, sortKey, sortDir, toggle } = useTableSort<PulseProject, SortKey>(
+  const { sorted, sortKey, sortDir, toggle, set } = useTableSort<PulseProject, SortKey>(
     filtered,
     comparators
   )
+
+  const sortValue = sortKey ? `${sortKey}-${sortDir}` : ""
+
+  function handleSortChange(value: string) {
+    if (!value) { set(null, "asc"); return }
+    const dashIdx = value.lastIndexOf("-")
+    const key = value.slice(0, dashIdx) as SortKey
+    const dir = value.slice(dashIdx + 1) as SortDir
+    set(key, dir)
+  }
 
   const countFor = (v: TabValue) =>
     v === "all"
@@ -147,36 +168,63 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
-        {/* Tabs filter by status */}
-        <div className="flex flex-wrap gap-2 px-6">
-          {tabs.map((t) => {
-            const isActive = active === t.value
-            return (
-              <button
-                key={t.value}
-                type="button"
-                onClick={() => setActive(t.value)}
-                className={cn(
-                  "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-                  isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border text-foreground hover:bg-accent"
-                )}
-              >
-                <span>{t.label}</span>
-                <span
+        {/* Tabs + sort dropdown */}
+        <div className="flex items-center justify-between gap-4 px-6">
+          <div className="flex flex-wrap gap-2">
+            {tabs.map((t) => {
+              const isActive = active === t.value
+              return (
+                <button
+                  key={t.value}
+                  type="button"
+                  onClick={() => setActive(t.value)}
                   className={cn(
-                    "text-[11px]",
+                    "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
                     isActive
-                      ? "text-primary-foreground/70"
-                      : "text-muted-foreground"
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border text-foreground hover:bg-accent"
                   )}
                 >
-                  {countFor(t.value)}
-                </span>
-              </button>
-            )
-          })}
+                  <span>{t.label}</span>
+                  <span
+                    className={cn(
+                      "text-[11px]",
+                      isActive
+                        ? "text-primary-foreground/70"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    {countFor(t.value)}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          <Select value={sortValue} onValueChange={handleSortChange}>
+            <SelectTrigger size="sm" className="w-[168px] shrink-0">
+              <SelectValue placeholder="Sort by…" />
+            </SelectTrigger>
+            <SelectContent align="end">
+              <SelectItem value="name-asc">Project (A → Z)</SelectItem>
+              <SelectItem value="name-desc">Project (Z → A)</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="client-asc">Client (A → Z)</SelectItem>
+              <SelectItem value="client-desc">Client (Z → A)</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="status-asc">Status (workflow)</SelectItem>
+              <SelectItem value="status-desc">Status (reversed)</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="team-asc">Team (smallest)</SelectItem>
+              <SelectItem value="team-desc">Team (largest)</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="due-asc">Due date (earliest)</SelectItem>
+              <SelectItem value="due-desc">Due date (latest)</SelectItem>
+              <SelectSeparator />
+              <SelectItem value="tasks-asc">Tasks (least done)</SelectItem>
+              <SelectItem value="tasks-desc">Tasks (most done)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Table */}
@@ -184,33 +232,26 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <SortTh
-                  label="Project"
-                  column="name"
-                  sortKey={sortKey}
-                  sortDir={sortDir}
-                  onSort={toggle}
-                  className="px-6"
-                />
-                <th className="px-3 py-3 text-left font-medium">Client</th>
-                <SortTh
-                  label="Status"
-                  column="status"
-                  sortKey={sortKey}
-                  sortDir={sortDir}
-                  onSort={toggle}
-                  className="px-3"
-                />
-                <th className="px-3 py-3 text-left font-medium">Team</th>
-                <SortTh
-                  label="Due Date"
-                  column="due"
-                  sortKey={sortKey}
-                  sortDir={sortDir}
-                  onSort={toggle}
-                  className="px-3"
-                />
-                <th className="px-3 py-3 text-left font-medium">Tasks</th>
+                {(
+                  [
+                    { label: "Project",  column: "name",   className: "px-6" },
+                    { label: "Client",   column: "client", className: "px-3" },
+                    { label: "Status",   column: "status", className: "px-3" },
+                    { label: "Team",     column: "team",   className: "px-3" },
+                    { label: "Due Date", column: "due",    className: "px-3" },
+                    { label: "Tasks",    column: "tasks",  className: "px-3" },
+                  ] as const
+                ).map(({ label, column, className }) => (
+                  <SortTh
+                    key={column}
+                    label={label}
+                    column={column}
+                    sortKey={sortKey}
+                    sortDir={sortDir}
+                    onSort={toggle}
+                    className={className}
+                  />
+                ))}
               </tr>
             </thead>
             <tbody>
