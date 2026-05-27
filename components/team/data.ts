@@ -1,7 +1,14 @@
 import type { TeamMember } from "./types"
 
 export const teamMembers: TeamMember[] = [
-  { initials: "HB", name: "Hani Buskila",  role: "Senior UI UX Designer", avatarColor: "bg-emerald-500" },
+  {
+    initials: "HB",
+    name: "Hani Buskila",
+    role: "UI UX Designer & Front-End Developer",
+    avatarColor: "bg-emerald-500",
+    image: "/hani-buskila.jpg",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
   { initials: "TR", name: "Tal Rosen",     role: "Co-Founder & CEO",      avatarColor: "bg-blue-500"    },
   { initials: "NM", name: "Noa Meir",      role: "Co-Founder & COO",      avatarColor: "bg-pink-500"    },
   { initials: "DC", name: "Daniel Cohen",  role: "Senior UI UX Designer", avatarColor: "bg-emerald-500" },
