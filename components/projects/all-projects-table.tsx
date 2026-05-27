@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import {
   Archive,
   CalendarDays,
@@ -31,6 +31,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Avatar,
   AvatarFallback,
@@ -269,14 +270,102 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
   )
 }
 
+// ── skeleton placeholders ────────────────────────────────────────────────────
+
+function ProjectCardSkeleton() {
+  return (
+    <div className="flex flex-col rounded-xl border bg-card shadow-sm p-5 gap-4">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-5 w-20 rounded-full" />
+        <Skeleton className="size-8 rounded-md" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-1/2" />
+      </div>
+      <div className="flex items-center gap-2">
+        <Skeleton className="size-6 rounded-full" />
+        <Skeleton className="h-4 w-24" />
+      </div>
+      <Skeleton className="h-px w-full" />
+      <div className="flex items-center justify-between">
+        <div className="flex -space-x-1">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="size-6 rounded-full ring-2 ring-background" />
+          ))}
+        </div>
+        <Skeleton className="h-3 w-16" />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <div className="flex justify-between">
+          <Skeleton className="h-3 w-10" />
+          <Skeleton className="h-3 w-8" />
+        </div>
+        <Skeleton className="h-1.5 w-full rounded-full" />
+      </div>
+    </div>
+  )
+}
+
+function ProjectTableRowSkeleton({ isLast }: { isLast: boolean }) {
+  return (
+    <tr className={cn(!isLast && "border-b border-border")}>
+      <td className="px-6 py-4 w-[200px]">
+        <div className="flex flex-col gap-1.5">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-3 w-20" />
+        </div>
+      </td>
+      <td className="px-3 py-4">
+        <div className="flex items-center gap-2">
+          <Skeleton className="size-6 rounded-full" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+      </td>
+      <td className="px-3 py-4">
+        <Skeleton className="h-5 w-16 rounded-full" />
+      </td>
+      <td className="px-3 py-4">
+        <div className="flex -space-x-1">
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="size-6 rounded-full ring-2 ring-background" />
+          ))}
+        </div>
+      </td>
+      <td className="px-3 py-4">
+        <Skeleton className="h-4 w-20" />
+      </td>
+      <td className="px-3 py-4 min-w-[140px]">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex justify-between">
+            <Skeleton className="h-3 w-10" />
+            <Skeleton className="h-3 w-8" />
+          </div>
+          <Skeleton className="h-1.5 w-full rounded-full" />
+        </div>
+      </td>
+      <td className="px-3 py-4">
+        <Skeleton className="h-4 w-20" />
+      </td>
+      <td className="px-3 py-4 w-10" />
+    </tr>
+  )
+}
+
 // ── main component ───────────────────────────────────────────────────────────
 
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
+  const [isLoading, setIsLoading] = useState(true)
   const [active,   setActive]   = useState<TabValue>("all")
   const [search,   setSearch]   = useState("")
   const [view,     setView]     = useState<ViewMode>("grid")
   const [sortCol,  setSortCol]  = useState<SortCol | null>(null)
   const [sortDir,  setSortDir]  = useState<SortDir>("asc")
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 1400)
+    return () => clearTimeout(t)
+  }, [])
 
   function handleSort(col: SortCol) {
     if (sortCol === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"))
@@ -401,7 +490,11 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
 
         {/* Grid view */}
         {view === "grid" && (
-          sorted.length === 0 ? emptyState : (
+          isLoading ? (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => <ProjectCardSkeleton key={i} />)}
+            </div>
+          ) : sorted.length === 0 ? emptyState : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {sorted.map((p) => <ProjectCard key={p.id} project={p} />)}
             </div>
@@ -410,35 +503,40 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
 
         {/* Table view */}
         {view === "table" && (
-          sorted.length === 0 ? emptyState : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-6 py-2 text-left w-[200px]">
-                      <SortHeader label="Name" col="name" active={sortCol} dir={sortDir} onSort={handleSort} />
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Client</th>
-                    <th className="px-3 py-2 text-left">
-                      <SortHeader label="Status" col="status" active={sortCol} dir={sortDir} onSort={handleSort} />
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Team</th>
-                    <th className="px-3 py-2 text-left">
-                      <SortHeader label="Due" col="due" active={sortCol} dir={sortDir} onSort={handleSort} />
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">Tasks</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Figma Link</th>
-                    <th className="w-10" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {sorted.map((p, i) => (
-                    <ProjectTableRow key={p.id} project={p} isLast={i === sorted.length - 1} />
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="px-6 py-2 text-left w-[200px]">
+                    <SortHeader label="Name" col="name" active={sortCol} dir={sortDir} onSort={handleSort} />
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Client</th>
+                  <th className="px-3 py-2 text-left">
+                    <SortHeader label="Status" col="status" active={sortCol} dir={sortDir} onSort={handleSort} />
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Team</th>
+                  <th className="px-3 py-2 text-left">
+                    <SortHeader label="Due" col="due" active={sortCol} dir={sortDir} onSort={handleSort} />
+                  </th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">Tasks</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Figma Link</th>
+                  <th className="w-10" />
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading
+                  ? Array.from({ length: 5 }).map((_, i) => (
+                      <ProjectTableRowSkeleton key={i} isLast={i === 4} />
+                    ))
+                  : sorted.length === 0
+                    ? <tr><td colSpan={8}>{emptyState}</td></tr>
+                    : sorted.map((p, i) => (
+                        <ProjectTableRow key={p.id} project={p} isLast={i === sorted.length - 1} />
+                      ))
+                }
+              </tbody>
+            </table>
+          </div>
         )}
       </CardContent>
     </Card>
