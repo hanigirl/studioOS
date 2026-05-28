@@ -19,12 +19,12 @@ export default function ProjectsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <SlidersHorizontal />
+            <Button variant="outline" size="sm" className="group">
+              <SlidersHorizontal className="transition-transform duration-160 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110" />
               Filter
             </Button>
-            <Button size="sm">
-              <Plus />
+            <Button size="sm" className="group">
+              <Plus className="transition-transform duration-160 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-90" />
               New Project
             </Button>
           </div>

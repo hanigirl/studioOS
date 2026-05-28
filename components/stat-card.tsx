@@ -23,16 +23,16 @@ export function StatCard({ title, value, change, icon: Icon, color = "blue" }: S
   const isNegative = change.startsWith("-")
 
   return (
-    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-4">
+    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md py-0">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between mb-3">
           <p className="text-sm font-medium text-muted-foreground">{title}</p>
           <div className={cn("rounded-lg p-2 shrink-0", iconColors[color])}>
             <Icon className="size-4" aria-hidden />
           </div>
         </div>
 
-        <p className="text-2xl font-bold tracking-tight mb-3">{value}</p>
+        <p className="text-2xl font-bold tracking-tight mb-2">{value}</p>
 
         <span
           className={cn(
