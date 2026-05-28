@@ -4,21 +4,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import type { PulseProject } from "./types"
 
-interface ProjectStat {
-  title: string
-  value: string
-  caption: string
-}
+export function OverviewStats({ projects }: { projects: PulseProject[] }) {
+  const active    = projects.filter(p => p.status !== "Done").length
+  const inReview  = projects.filter(p => p.status === "Review").length
+  const completed = projects.filter(p => p.status === "Done").length
+  const overdue   = projects.filter(p => p.overdue).length
 
-const stats: ProjectStat[] = [
-  { title: "Active Projects", value: "12", caption: "+3 this month" },
-  { title: "In Review", value: "4", caption: "Awaiting client feedback" },
-  { title: "Completed", value: "28", caption: "+8 from last month" },
-  { title: "Avg. Turnaround", value: "6.2d", caption: "−1.3 days this quarter" },
-]
+  const stats = [
+    { title: "Active Projects", value: String(active),    caption: "Excluding completed" },
+    { title: "In Review",       value: String(inReview),  caption: "Awaiting client feedback" },
+    { title: "Completed",       value: String(completed), caption: "Across all clients" },
+    { title: "Overdue",         value: String(overdue),   caption: "Past deadline" },
+  ]
 
-export function OverviewStats() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((s) => (

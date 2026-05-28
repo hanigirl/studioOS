@@ -1,19 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   Archive,
   CalendarDays,
+  Trash2,
   ChevronDown,
   ChevronUp,
-  ChevronsUpDown,
+  Copy,
   ExternalLink,
   LayoutGrid,
+  Link,
   List,
   MoreHorizontal,
-  Pencil,
   Search,
-  Trash2,
 } from "lucide-react"
 import {
   Card,
@@ -38,6 +39,14 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 import type { ProjectStatus, PulseProject } from "./types"
 
@@ -61,7 +70,7 @@ const tabs = [
 
 type TabValue = (typeof tabs)[number]["value"]
 type ViewMode = "grid" | "table"
-type SortCol  = "name" | "status" | "due"
+type SortCol  = "name" | "client" | "status" | "due" | "tasks" | "figma"
 type SortDir  = "asc" | "desc"
 
 const STATUS_ORDER: Record<ProjectStatus, number> = {
@@ -92,7 +101,7 @@ function TaskProgress({ done, total }: { done: number; total: number }) {
   )
 }
 
-function ProjectMenu() {
+function ProjectMenu({ figmaUrl, projectId }: { figmaUrl?: string; projectId: string }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -105,8 +114,20 @@ function ProjectMenu() {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem><Pencil className="size-4" />Edit</DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={!figmaUrl}
+          onClick={() => figmaUrl && window.open(figmaUrl, "_blank", "noopener,noreferrer")}
+        >
+          <ExternalLink className="size-4" />Open in Figma
+        </DropdownMenuItem>
+        <DropdownMenuItem><Copy className="size-4" />Duplicate</DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem><Archive className="size-4" />Archive</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => navigator.clipboard.writeText(`${window.location.origin}/projects/${projectId}`)}
+        >
+          <Link className="size-4" />Copy link
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive"><Trash2 className="size-4" />Delete</DropdownMenuItem>
       </DropdownMenuContent>
@@ -125,7 +146,7 @@ function ProjectCard({ project }: { project: PulseProject }) {
         <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium", statusStyles[project.status])}>
           {project.status}
         </span>
-        <ProjectMenu />
+        <ProjectMenu figmaUrl={project.figmaUrl} projectId={project.id} />
       </div>
 
       {/* Name + subtitle */}
@@ -185,32 +206,53 @@ function ProjectCard({ project }: { project: PulseProject }) {
 
 // ── table row ────────────────────────────────────────────────────────────────
 
+function SortIcon({ isActive, dir }: { isActive: boolean; dir: SortDir }) {
+  return (
+    <span className="relative inline-flex h-3.5 w-2.5 shrink-0 flex-col items-center" aria-hidden>
+      <ChevronUp className={cn("absolute top-0 h-2.5 w-2.5 transition-opacity", isActive && dir === "asc" ? "opacity-100" : "opacity-60")} />
+      <ChevronDown className={cn("absolute bottom-0 h-2.5 w-2.5 transition-opacity", isActive && dir === "desc" ? "opacity-100" : "opacity-60")} />
+    </span>
+  )
+}
+
+function PlainHeader({ label }: { label: string }) {
+  return (
+    <span className="inline-flex items-center text-xs font-medium text-foreground">
+      {label}
+    </span>
+  )
+}
+
 function SortHeader({
   label, col, active, dir, onSort,
 }: {
   label: string; col: SortCol; active: SortCol | null; dir: SortDir; onSort: (c: SortCol) => void
 }) {
   const isActive = active === col
-  const Icon = isActive ? (dir === "asc" ? ChevronUp : ChevronDown) : ChevronsUpDown
   return (
     <button
       type="button"
       onClick={() => onSort(col)}
       className={cn(
         "inline-flex items-center gap-1 text-xs font-medium transition-colors",
-        isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+        isActive ? "text-foreground" : "text-foreground hover:text-foreground/70"
       )}
     >
       {label}
-      <Icon className="size-3.5" aria-hidden />
+      <SortIcon isActive={isActive} dir={dir} />
     </button>
   )
 }
 
 function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: boolean }) {
+  const router = useRouter()
+  const [status, setStatus] = useState<ProjectStatus>(project.status)
   const isOverdue = project.overdue || project.daysToDeadline < 0
   return (
-    <tr className={cn("group hover:bg-muted/40 transition-colors", !isLast && "border-b border-border")}>
+    <tr
+      className={cn("group cursor-pointer hover:bg-muted/40 transition-colors", !isLast && "border-b border-border")}
+      onClick={() => router.push(`/projects/${project.id}`)}
+    >
       <td className="px-6 py-4 w-[200px]">
         <div className="flex flex-col gap-0.5">
           <span className="font-semibold leading-tight">{project.name}</span>
@@ -226,10 +268,21 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           <span className="font-medium">{project.client}</span>
         </div>
       </td>
-      <td className="px-3 py-4">
-        <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium", statusStyles[project.status])}>
-          {project.status}
-        </span>
+      <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <span className={cn("inline-flex cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium outline-none", statusStyles[status])}>
+              {status}
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            {(["Discovery", "Design", "Review", "Handoff"] as ProjectStatus[]).map((s) => (
+              <DropdownMenuItem key={s} onSelect={() => setStatus(s)}>
+                <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-medium", statusStyles[s])}>{s}</span>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </td>
       <td className="px-3 py-4">
         <AvatarGroup>
@@ -241,14 +294,21 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
         </AvatarGroup>
       </td>
       <td className="px-3 py-4">
-        <span className={cn("text-sm font-medium tabular-nums", isOverdue && "text-destructive")}>
-          {project.due}
-        </span>
+        <div className="flex items-center gap-1.5">
+          <span className={cn("text-sm font-medium tabular-nums", isOverdue && "text-destructive")}>
+            {project.due}
+          </span>
+          {isOverdue && (
+            <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
+              Overdue
+            </span>
+          )}
+        </div>
       </td>
       <td className="px-3 py-4 min-w-[140px]">
         <TaskProgress done={project.tasksDone} total={project.tasksTotal} />
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
         {project.figmaUrl ? (
           <a
             href={project.figmaUrl}
@@ -263,8 +323,8 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           <span className="text-xs text-muted-foreground/40">—</span>
         )}
       </td>
-      <td className="px-3 py-4 w-10">
-        <ProjectMenu />
+      <td className="px-3 py-4 w-10" onClick={(e) => e.stopPropagation()}>
+        <ProjectMenu figmaUrl={project.figmaUrl} projectId={project.id} />
       </td>
     </tr>
   )
@@ -367,6 +427,14 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     return () => clearTimeout(t)
   }, [])
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("projects-view-mode")
+      if (saved === "grid" || saved === "table") setView(saved)
+    } catch {}
+  }, [])
+
+
   function handleSort(col: SortCol) {
     if (sortCol === col) setSortDir((d) => (d === "asc" ? "desc" : "asc"))
     else { setSortCol(col); setSortDir("asc") }
@@ -383,8 +451,11 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     if (!sortCol) return 0
     let cmp = 0
     if (sortCol === "name")   cmp = a.name.localeCompare(b.name)
+    if (sortCol === "client") cmp = a.client.localeCompare(b.client)
     if (sortCol === "status") cmp = STATUS_ORDER[a.status] - STATUS_ORDER[b.status]
     if (sortCol === "due")    cmp = a.daysToDeadline - b.daysToDeadline
+    if (sortCol === "tasks")  cmp = (a.tasksDone / (a.tasksTotal || 1)) - (b.tasksDone / (b.tasksTotal || 1))
+    if (sortCol === "figma")  cmp = (a.figmaUrl ? 1 : 0) - (b.figmaUrl ? 1 : 0)
     return sortDir === "asc" ? cmp : -cmp
   })
 
@@ -395,7 +466,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     <div className="flex flex-col items-center gap-2 py-12">
       <Search className="size-7 text-muted-foreground/30" aria-hidden />
       <p className="text-sm font-medium text-muted-foreground">No projects found</p>
-      <p className="text-xs text-muted-foreground/60">Try adjusting your search or filters.</p>
+      <p className="text-xs text-muted-foreground/60">There are no projects matching this filter.</p>
       {(search || active !== "all") && (
         <button
           type="button"
@@ -462,7 +533,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             <button
               type="button"
               aria-label="Grid view"
-              onClick={() => setView("grid")}
+              onClick={() => { setView("grid"); try { localStorage.setItem("projects-view-mode", "grid") } catch {} }}
               className={cn(
                 "flex size-7 items-center justify-center rounded-md transition-colors",
                 view === "grid"
@@ -475,7 +546,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             <button
               type="button"
               aria-label="Table view"
-              onClick={() => setView("table")}
+              onClick={() => { setView("table"); try { localStorage.setItem("projects-view-mode", "table") } catch {} }}
               className={cn(
                 "flex size-7 items-center justify-center rounded-md transition-colors",
                 view === "table"
@@ -510,16 +581,24 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                   <th className="px-6 py-2 text-left w-[200px]">
                     <SortHeader label="Name" col="name" active={sortCol} dir={sortDir} onSort={handleSort} />
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Client</th>
+                  <th className="px-3 py-2 text-left">
+                    <SortHeader label="Client" col="client" active={sortCol} dir={sortDir} onSort={handleSort} />
+                  </th>
                   <th className="px-3 py-2 text-left">
                     <SortHeader label="Status" col="status" active={sortCol} dir={sortDir} onSort={handleSort} />
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Team</th>
+                  <th className="px-3 py-2 text-left">
+                    <PlainHeader label="Team" />
+                  </th>
                   <th className="px-3 py-2 text-left">
                     <SortHeader label="Due" col="due" active={sortCol} dir={sortDir} onSort={handleSort} />
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground min-w-[140px]">Tasks</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Figma Link</th>
+                  <th className="px-3 py-2 text-left min-w-[140px]">
+                    <PlainHeader label="Tasks" />
+                  </th>
+                  <th className="px-3 py-2 text-left">
+                    <PlainHeader label="Figma Link" />
+                  </th>
                   <th className="w-10" />
                 </tr>
               </thead>
