@@ -22,6 +22,7 @@ export interface TeamMember {
   name: string
   initials: string
   color: string
+  avatar?: string
 }
 
 export interface NextTask {

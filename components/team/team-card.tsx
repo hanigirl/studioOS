@@ -1,4 +1,4 @@
-import { Instagram, Linkedin, Youtube, Camera, BriefcaseBusiness, Play } from "lucide-react"
+import { Instagram, Linkedin, Youtube } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,7 @@ export function TeamCard({ member }: { member: TeamMember }) {
     <Card className="w-[272px] shrink-0 items-center">
       <Avatar className="size-40">
         {member.image && (
-          <AvatarImage src={member.image} alt={member.name} className="object-cover" />
+          <AvatarImage src={member.image} alt={member.name} className={cn("object-cover", member.imageClassName)} />
         )}
         <AvatarFallback
           className={cn(
@@ -54,9 +54,9 @@ export function TeamCard({ member }: { member: TeamMember }) {
           </>
         ) : (
           <>
-            <Button variant="ghost" size="icon-sm"><Camera className="size-4" /></Button>
-            <Button variant="ghost" size="icon-sm"><BriefcaseBusiness className="size-4" /></Button>
-            <Button variant="ghost" size="icon-sm"><Play className="size-4" /></Button>
+            <Button variant="ghost" size="icon-sm"><Youtube className="size-4" /></Button>
+            <Button variant="ghost" size="icon-sm"><Linkedin className="size-4" /></Button>
+            <Button variant="ghost" size="icon-sm"><Instagram className="size-4" /></Button>
           </>
         )}
       </CardContent>
