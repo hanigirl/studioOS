@@ -122,7 +122,7 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
       { label: "Monthly Revenue",    value: "$3,580",  delta: "+8% vs prev 7d",   deltaPositive: true  },
       { label: "Active Projects",    value: "6",       delta: "no change",         deltaPositive: true  },
       { label: "Completed Tasks",    value: "19",      delta: "+18% vs prev 7d",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 7d",     deltaPositive: true  },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 7d",     deltaPositive: false },
       { label: "Avg Tasks / Member", value: "3.8",     delta: "+5% vs prev 7d",    deltaPositive: true  },
     ],
     revenue: [
@@ -154,7 +154,7 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
       { label: "Monthly Revenue",    value: "$13,700", delta: "+11% vs prev 30d",  deltaPositive: true  },
       { label: "Active Projects",    value: "6",       delta: "no change",          deltaPositive: true  },
       { label: "Completed Tasks",    value: "35",      delta: "+18% vs prev 30d",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 30d",     deltaPositive: true  },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 30d",     deltaPositive: false },
       { label: "Avg Tasks / Member", value: "7.0",     delta: "+9% vs prev 30d",    deltaPositive: true  },
     ],
     revenue: [
@@ -180,7 +180,7 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
       { label: "Monthly Revenue",    value: "$15,200", delta: "+12% vs prev 3m",   deltaPositive: true  },
       { label: "Active Projects",    value: "6",       delta: "+2 vs prev 3m",     deltaPositive: true  },
       { label: "Completed Tasks",    value: "54",      delta: "+20% vs prev 3m",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 3m",     deltaPositive: true  },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 3m",     deltaPositive: false },
       { label: "Avg Tasks / Member", value: "10.8",    delta: "+10% vs prev 3m",   deltaPositive: true  },
     ],
     revenue: [
@@ -204,7 +204,7 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
       { label: "Monthly Revenue",    value: "$18,400", delta: "+14% vs prev 6m",   deltaPositive: true  },
       { label: "Active Projects",    value: "6",       delta: "+2 vs prev 6m",     deltaPositive: true  },
       { label: "Completed Tasks",    value: "87",      delta: "+23% vs prev 6m",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 6m",     deltaPositive: true  },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 6m",     deltaPositive: false },
       { label: "Avg Tasks / Member", value: "17.4",    delta: "+4% vs prev 6m",    deltaPositive: true  },
     ],
     revenue: [
@@ -234,7 +234,7 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
       { label: "Monthly Revenue",    value: "$22,800", delta: "+18% vs prev 12m",  deltaPositive: true  },
       { label: "Active Projects",    value: "6",       delta: "+2 vs prev 12m",    deltaPositive: true  },
       { label: "Completed Tasks",    value: "156",     delta: "+31% vs prev 12m",  deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−2 vs prev 12m",    deltaPositive: true  },
+      { label: "Overdue Tasks",      value: "3",       delta: "−2 vs prev 12m",    deltaPositive: false },
       { label: "Avg Tasks / Member", value: "31.2",    delta: "+12% vs prev 12m",  deltaPositive: true  },
     ],
     revenue: [

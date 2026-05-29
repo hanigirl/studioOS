@@ -13,7 +13,7 @@ export function AnalyticsKpiCard({ kpi }: { kpi: KpiData }) {
             "text-xs",
             kpi.deltaPositive
               ? "text-emerald-600 dark:text-emerald-400"
-              : "text-red-600 dark:text-red-400"
+              : "text-destructive"
           )}
         >
           {kpi.delta}

@@ -46,7 +46,7 @@ export function TaskRow({ task, showAssignee = true, onStatusChange, onDelete, o
 
   return (
     <TableRow
-      className="cursor-pointer border-b border-border"
+      className="group cursor-pointer border-b border-border"
       onClick={() => onOpen(task)}
     >
       {/* Completion checkbox */}
@@ -147,14 +147,14 @@ export function TaskRow({ task, showAssignee = true, onStatusChange, onDelete, o
             <CalendarDays
               className={cn(
                 "size-3.5 shrink-0",
-                overdue ? "text-red-500" : "text-muted-foreground"
+                overdue ? "text-destructive" : "text-muted-foreground"
               )}
               aria-hidden
             />
             <span
               className={cn(
                 "text-sm tabular-nums",
-                overdue ? "text-red-500 font-medium" : "text-muted-foreground"
+                overdue ? "text-destructive font-medium" : "text-muted-foreground"
               )}
             >
               {formatDate(task.dueDate)}

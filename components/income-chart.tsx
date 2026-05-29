@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import {
   Card,
   CardAction,
@@ -44,11 +44,11 @@ const chartData = [
 const chartConfig = {
   thisYear: {
     label: "This Year",
-    color: "hsl(217, 91%, 60%)",
+    color: "var(--color-chart-1)",
   },
   lastYear: {
     label: "Last Year",
-    color: "hsl(213, 97%, 75%)",
+    color: "var(--color-chart-2)",
   },
 } satisfies ChartConfig
 
@@ -82,7 +82,7 @@ export function IncomeChart() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="min-h-[350px] w-full">
-          <LineChart data={filteredData}>
+          <BarChart data={filteredData}>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -96,23 +96,11 @@ export function IncomeChart() {
               tickMargin={8}
               tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
+            <ChartTooltip content={<ChartTooltipContent />} cursor={false} />
             <ChartLegend content={<ChartLegendContent />} />
-            <Line
-              dataKey="thisYear"
-              type="monotone"
-              stroke="var(--color-thisYear)"
-              strokeWidth={2}
-              dot={false}
-            />
-            <Line
-              dataKey="lastYear"
-              type="monotone"
-              stroke="var(--color-lastYear)"
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
+            <Bar dataKey="thisYear" fill="var(--color-thisYear)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="lastYear" fill="var(--color-lastYear)" radius={[4, 4, 0, 0]} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
