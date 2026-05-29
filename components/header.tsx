@@ -32,8 +32,11 @@ function ThemeToggle() {
   }
 
   return (
-    <Button variant="ghost" size="icon" onClick={toggle}>
-      {theme === "light" ? <Moon className="size-5" /> : <Sun className="size-5" />}
+    <Button variant="ghost" size="icon" onClick={toggle} className="group">
+      {theme === "light"
+        ? <Moon className="size-5 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-rotate-12" />
+        : <Sun  className="size-5 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:rotate-45" />
+      }
       <span className="sr-only">Toggle theme</span>
     </Button>
   )

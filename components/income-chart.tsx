@@ -61,7 +61,7 @@ export function IncomeChart() {
   )
 
   return (
-    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 focus-within:-translate-y-0.5 hover:shadow-md focus-within:shadow-md">
       <CardHeader>
         <CardTitle>Your Income</CardTitle>
         <CardDescription>

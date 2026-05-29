@@ -66,10 +66,13 @@ export function RecentSales() {
             {projects.length} projects in progress.
           </CardDescription>
         </div>
-        <Button variant="outline" size="sm" asChild className="shrink-0">
+        <Button variant="outline" size="sm" asChild className="shrink-0 group">
           <Link href="/projects">
             View all projects
-            <ArrowUpRight aria-hidden="true" />
+            <ArrowUpRight
+              aria-hidden="true"
+              className="transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
           </Link>
         </Button>
       </CardHeader>
