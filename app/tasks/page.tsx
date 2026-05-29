@@ -31,15 +31,20 @@ interface FilterState {
 
 const EMPTY_FILTERS: FilterState = { priorities: [], projects: [], assignees: [] }
 
-type TabValue = "all" | "mine" | TaskStatus
+type ViewTab = "mine" | "all"
+type StatusFilter = "all" | TaskStatus
 
-const TABS: { label: string; value: TabValue }[] = [
-  { label: "All Tasks",   value: "all" },
-  { label: "My Tasks",    value: "mine" },
-  { label: "To Do",       value: "To Do" },
-  { label: "In Progress", value: "In Progress" },
-  { label: "In Review",   value: "In Review" },
-  { label: "Completed",   value: "Completed" },
+const VIEW_TABS: { label: string; value: ViewTab }[] = [
+  { label: "My Tasks",  value: "mine" },
+  { label: "All Tasks", value: "all"  },
+]
+
+const STATUS_OPTIONS: { label: string; value: StatusFilter }[] = [
+  { label: "All statuses", value: "all"         },
+  { label: "To Do",        value: "To Do"        },
+  { label: "In Progress",  value: "In Progress"  },
+  { label: "In Review",    value: "In Review"    },
+  { label: "Completed",    value: "Completed"    },
 ]
 
 const MY_TASKS_ASSIGNEE = "Daniel"
@@ -49,8 +54,9 @@ const PRIORITIES: TaskPriority[] = ["Low", "Medium", "High", "Urgent"]
 // ── page ─────────────────────────────────────────────────────────────────────
 
 export default function TasksPage() {
-  const [tasks,       setTasks]       = useState<Task[]>(mockTasks)
-  const [activeTab,   setActiveTab]   = useState<TabValue>("all")
+  const [tasks,        setTasks]        = useState<Task[]>(mockTasks)
+  const [activeTab,    setActiveTab]    = useState<ViewTab>("mine")
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all")
   const [search,      setSearch]      = useState("")
   const [sortKey,     setSortKey]     = useState<SortKey>("dueDate")
   const [sortDir,     setSortDir]     = useState<SortDir>("asc")
@@ -74,16 +80,18 @@ export default function TasksPage() {
     [tasks]
   )
 
+  const showAssignee = activeTab !== "mine"
+
   const activeFilterCount =
     filters.priorities.length + filters.projects.length + filters.assignees.length
 
-  const hasActiveFilters = activeFilterCount > 0 || search.trim() !== ""
+  const hasActiveFilters = activeFilterCount > 0 || search.trim() !== "" || statusFilter !== "all"
 
   const visibleTasks = useMemo(() => {
     const q = search.toLowerCase().trim()
     return tasks.filter((t) => {
       if (activeTab === "mine" && t.assignee?.name !== MY_TASKS_ASSIGNEE) return false
-      if (activeTab !== "all" && activeTab !== "mine" && t.status !== activeTab) return false
+      if (statusFilter !== "all" && t.status !== statusFilter) return false
       if (q && !t.title.toLowerCase().includes(q)) return false
       if (filters.priorities.length > 0 && !filters.priorities.includes(t.priority)) return false
       if (filters.projects.length > 0  && !filters.projects.includes(t.project))    return false
@@ -92,7 +100,7 @@ export default function TasksPage() {
       }
       return true
     })
-  }, [tasks, activeTab, search, filters])
+  }, [tasks, activeTab, statusFilter, search, filters])
 
   // ── handlers ─────────────────────────────────────────────────────────────
 
@@ -122,6 +130,7 @@ export default function TasksPage() {
   function clearFilters() {
     setFilters(EMPTY_FILTERS)
     setSearch("")
+    setStatusFilter("all")
   }
 
   function toggle<T extends string>(arr: T[], val: T): T[] {
@@ -147,7 +156,7 @@ export default function TasksPage() {
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
             <p className="text-sm text-muted-foreground">
-              All tasks across your active projects
+              Your tasks across active projects
             </p>
           </div>
 
@@ -157,8 +166,7 @@ export default function TasksPage() {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className={cn("h-9", activeFilterCount > 0 && "border-primary/60 bg-primary/5")}
+                  className={cn(activeFilterCount > 0 && "border-primary/60 bg-primary/5")}
                 >
                   <SlidersHorizontal />
                   Filter
@@ -268,7 +276,7 @@ export default function TasksPage() {
 
             {/* Sort */}
             <Select value={sortSelectValue} onValueChange={handleSortSelect}>
-              <SelectTrigger size="sm" className="h-9 w-auto gap-1.5">
+              <SelectTrigger className="w-auto gap-1.5">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align="end">
@@ -282,7 +290,7 @@ export default function TasksPage() {
             </Select>
 
             {/* New task */}
-            <Button size="sm" className="h-9" onClick={() => setNewTaskOpen(true)}>
+            <Button onClick={() => setNewTaskOpen(true)}>
               <Plus />
               New Task
             </Button>
@@ -292,9 +300,9 @@ export default function TasksPage() {
         {/* Tabs + search + table */}
         <div className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            {/* Tab pills */}
-            <div className="flex flex-wrap gap-1.5">
-              {TABS.map((tab) => (
+            {/* View tabs: My Tasks / All Tasks */}
+            <div className="flex gap-1.5">
+              {VIEW_TABS.map((tab) => (
                 <button
                   key={tab.value}
                   type="button"
@@ -311,19 +319,37 @@ export default function TasksPage() {
               ))}
             </div>
 
-            {/* Search */}
-            <div className="relative shrink-0">
-              <Search
-                className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
-                aria-hidden
-              />
-              <Input
-                type="search"
-                placeholder="Search tasks..."
-                className="h-8 w-full sm:w-52 pl-8 text-sm"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+            {/* Status filter + Search */}
+            <div className="flex items-center gap-2 shrink-0">
+              <Select
+                value={statusFilter}
+                onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+              >
+                <SelectTrigger className="h-8 w-auto gap-1.5 text-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent align="end">
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden
+                />
+                <Input
+                  type="search"
+                  placeholder="Search tasks..."
+                  className="h-8 w-full sm:w-48 pl-8 text-sm"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
@@ -332,6 +358,7 @@ export default function TasksPage() {
             sortKey={sortKey}
             sortDir={sortDir}
             hasActiveFilters={hasActiveFilters}
+            showAssignee={showAssignee}
             onStatusChange={handleStatusChange}
             onDelete={handleDelete}
             onOpen={handleOpen}

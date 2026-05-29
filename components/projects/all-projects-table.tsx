@@ -39,26 +39,9 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { statusStyles } from "./status-styles"
 import type { ProjectStatus, PulseProject } from "./types"
-
-// ── constants ────────────────────────────────────────────────────────────────
-
-const statusStyles: Record<ProjectStatus, string> = {
-  Discovery: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  Design:    "bg-blue-100   text-blue-700   dark:bg-blue-900/30   dark:text-blue-400",
-  Review:    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  Handoff:   "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Done:      "bg-muted text-muted-foreground",
-}
 
 const tabs = [
   { label: "All",       value: "all"       as const },
@@ -79,24 +62,32 @@ const STATUS_ORDER: Record<ProjectStatus, number> = {
 
 // ── shared sub-components ────────────────────────────────────────────────────
 
-function TaskProgress({ done, total }: { done: number; total: number }) {
+function TaskProgress({ done, total, compact = false }: { done: number; total: number; compact?: boolean }) {
   const pct = total === 0 ? 0 : Math.round((done / total) * 100)
   const complete = done === total
+  const bar = (
+    <div className={cn("h-1.5 overflow-hidden rounded-full bg-muted", compact ? "flex-1" : "w-full")}>
+      <div
+        className={cn("h-full rounded-full transition-all duration-300", complete ? "bg-emerald-500" : "bg-primary")}
+        style={{ width: `${pct}%` }}
+      />
+    </div>
+  )
+  if (compact) {
+    return (
+      <div className="flex items-center gap-2 min-w-[100px]">
+        {bar}
+        <span className="text-xs tabular-nums text-muted-foreground shrink-0 w-[30px] text-right">{pct}%</span>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xs text-muted-foreground tabular-nums">{done} / {total}</span>
         <span className="text-xs font-medium tabular-nums">{pct}%</span>
       </div>
-      <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
-        <div
-          className={cn(
-            "h-full rounded-full transition-all duration-300",
-            complete ? "bg-emerald-500" : "bg-primary"
-          )}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+      {bar}
     </div>
   )
 }
@@ -253,13 +244,13 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
       className={cn("group cursor-pointer hover:bg-muted/40 transition-colors", !isLast && "border-b border-border")}
       onClick={() => router.push(`/projects/${project.id}`)}
     >
-      <td className="px-6 py-4 w-[200px]">
+      <td className="px-6 py-3 w-[200px]">
         <div className="flex flex-col gap-0.5">
           <span className="font-semibold leading-tight">{project.name}</span>
           <span className="text-xs text-muted-foreground">{project.subtitle}</span>
         </div>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <div className="flex items-center gap-2">
           <Avatar size="sm">
             <AvatarImage src={project.clientLogo} alt={project.client} />
@@ -268,7 +259,7 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           <span className="font-medium">{project.client}</span>
         </div>
       </td>
-      <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
+      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <span className={cn("inline-flex cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium outline-none", statusStyles[status])}>
@@ -284,7 +275,7 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           </DropdownMenuContent>
         </DropdownMenu>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <AvatarGroup>
           {project.team.map((m) => (
             <Avatar key={m.name} size="sm">
@@ -293,7 +284,7 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           ))}
         </AvatarGroup>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <div className="flex items-center gap-1.5">
           <span className={cn("text-sm font-medium tabular-nums", isOverdue && "text-destructive")}>
             {project.due}
@@ -305,10 +296,10 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           )}
         </div>
       </td>
-      <td className="px-3 py-4 min-w-[140px]">
-        <TaskProgress done={project.tasksDone} total={project.tasksTotal} />
+      <td className="px-3 py-3 min-w-[100px]">
+        <TaskProgress done={project.tasksDone} total={project.tasksTotal} compact />
       </td>
-      <td className="px-3 py-4" onClick={(e) => e.stopPropagation()}>
+      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
         {project.figmaUrl ? (
           <a
             href={project.figmaUrl}
@@ -323,7 +314,7 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
           <span className="text-xs text-muted-foreground/40">—</span>
         )}
       </td>
-      <td className="px-3 py-4 w-10" onClick={(e) => e.stopPropagation()}>
+      <td className="px-3 py-3 w-10" onClick={(e) => e.stopPropagation()}>
         <ProjectMenu figmaUrl={project.figmaUrl} projectId={project.id} />
       </td>
     </tr>
@@ -370,32 +361,32 @@ function ProjectCardSkeleton() {
 function ProjectTableRowSkeleton({ isLast }: { isLast: boolean }) {
   return (
     <tr className={cn(!isLast && "border-b border-border")}>
-      <td className="px-6 py-4 w-[200px]">
+      <td className="px-6 py-3 w-[200px]">
         <div className="flex flex-col gap-1.5">
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-3 w-20" />
         </div>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <div className="flex items-center gap-2">
           <Skeleton className="size-6 rounded-full" />
           <Skeleton className="h-4 w-24" />
         </div>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <Skeleton className="h-5 w-16 rounded-full" />
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <div className="flex -space-x-1">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="size-6 rounded-full ring-2 ring-background" />
           ))}
         </div>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <Skeleton className="h-4 w-20" />
       </td>
-      <td className="px-3 py-4 min-w-[140px]">
+      <td className="px-3 py-3 min-w-[140px]">
         <div className="flex flex-col gap-1.5">
           <div className="flex justify-between">
             <Skeleton className="h-3 w-10" />
@@ -404,10 +395,10 @@ function ProjectTableRowSkeleton({ isLast }: { isLast: boolean }) {
           <Skeleton className="h-1.5 w-full rounded-full" />
         </div>
       </td>
-      <td className="px-3 py-4">
+      <td className="px-3 py-3">
         <Skeleton className="h-4 w-20" />
       </td>
-      <td className="px-3 py-4 w-10" />
+      <td className="px-3 py-3 w-10" />
     </tr>
   )
 }
@@ -462,6 +453,8 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const countFor = (v: TabValue) =>
     v === "all" ? projects.length : projects.filter((p) => p.status === v).length
 
+  const uniqueClientCount = new Set(projects.map((p) => p.client)).size
+
   const emptyState = (
     <div className="flex flex-col items-center gap-2 py-12">
       <Search className="size-7 text-muted-foreground/30" aria-hidden />
@@ -484,8 +477,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
       <CardHeader>
         <CardTitle>Active Projects</CardTitle>
         <CardDescription>
-          {projects.length} project{projects.length === 1 ? "" : "s"} in progress across{" "}
-          {projects.length} client{projects.length === 1 ? "" : "s"}
+          {projects.length} project{projects.length === 1 ? "" : "s"} across {uniqueClientCount} client{uniqueClientCount === 1 ? "" : "s"}
         </CardDescription>
         <CardAction>
           <div className="relative">

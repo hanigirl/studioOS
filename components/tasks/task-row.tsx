@@ -34,12 +34,13 @@ function isOverdue(task: Task): boolean {
 
 export interface TaskRowProps {
   task: Task
+  showAssignee?: boolean
   onStatusChange: (id: string, status: TaskStatus) => void
   onDelete: (id: string) => void
   onOpen: (task: Task) => void
 }
 
-export function TaskRow({ task, onStatusChange, onDelete, onOpen }: TaskRowProps) {
+export function TaskRow({ task, showAssignee = true, onStatusChange, onDelete, onOpen }: TaskRowProps) {
   const overdue = isOverdue(task)
   const completed = task.status === "Completed"
 
@@ -121,21 +122,23 @@ export function TaskRow({ task, onStatusChange, onDelete, onOpen }: TaskRowProps
         <span className="text-sm text-muted-foreground">{task.project}</span>
       </TableCell>
 
-      {/* Assignee — hidden on small screens */}
-      <TableCell className="hidden sm:table-cell">
-        {task.assignee ? (
-          <div className="flex items-center gap-2">
-            <Avatar size="sm">
-              <AvatarFallback className={cn("text-white text-xs", task.assignee.color)}>
-                {task.assignee.initials}
-              </AvatarFallback>
-            </Avatar>
-            <span className="text-sm hidden lg:inline">{task.assignee.name}</span>
-          </div>
-        ) : (
-          <span className="text-xs text-muted-foreground/40">—</span>
-        )}
-      </TableCell>
+      {/* Assignee — hidden on small screens and in My Tasks view */}
+      {showAssignee && (
+        <TableCell className="hidden sm:table-cell">
+          {task.assignee ? (
+            <div className="flex items-center gap-2">
+              <Avatar size="sm">
+                <AvatarFallback className={cn("text-white text-xs", task.assignee.color)}>
+                  {task.assignee.initials}
+                </AvatarFallback>
+              </Avatar>
+              <span className="text-sm hidden lg:inline">{task.assignee.name}</span>
+            </div>
+          ) : (
+            <span className="text-xs text-muted-foreground/40">—</span>
+          )}
+        </TableCell>
+      )}
 
       {/* Due date */}
       <TableCell>

@@ -31,7 +31,7 @@ export function sortTasks(tasks: Task[], key: SortKey, dir: SortDir): Task[] {
   })
 }
 
-function RowSkeleton() {
+function RowSkeleton({ showAssignee }: { showAssignee: boolean }) {
   return (
     <TableRow>
       <TableCell className="w-10 pl-4 pr-2">
@@ -46,12 +46,14 @@ function RowSkeleton() {
       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
       <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
-      <TableCell className="hidden sm:table-cell">
-        <div className="flex items-center gap-2">
-          <Skeleton className="size-6 rounded-full" />
-          <Skeleton className="h-4 w-16 hidden lg:block" />
-        </div>
-      </TableCell>
+      {showAssignee && (
+        <TableCell className="hidden sm:table-cell">
+          <div className="flex items-center gap-2">
+            <Skeleton className="size-6 rounded-full" />
+            <Skeleton className="h-4 w-16 hidden lg:block" />
+          </div>
+        </TableCell>
+      )}
       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
       <TableCell className="w-10" />
     </TableRow>
@@ -63,6 +65,7 @@ interface TasksTableProps {
   sortKey: SortKey
   sortDir: SortDir
   hasActiveFilters: boolean
+  showAssignee?: boolean
   isLoading?: boolean
   onStatusChange: (id: string, status: TaskStatus) => void
   onDelete: (id: string) => void
@@ -76,6 +79,7 @@ export function TasksTable({
   sortKey,
   sortDir,
   hasActiveFilters,
+  showAssignee = true,
   isLoading = false,
   onStatusChange,
   onDelete,
@@ -84,6 +88,7 @@ export function TasksTable({
   onNewTask,
 }: TasksTableProps) {
   const sorted = sortTasks(tasks, sortKey, sortDir)
+  const colSpan = showAssignee ? 8 : 7
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
@@ -95,17 +100,19 @@ export function TasksTable({
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
             <TableHead className="hidden md:table-cell">Project</TableHead>
-            <TableHead className="hidden sm:table-cell">Assignee</TableHead>
+            {showAssignee && <TableHead className="hidden sm:table-cell">Assignee</TableHead>}
             <TableHead>Due Date</TableHead>
             <TableHead className="w-10" />
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading ? (
-            Array.from({ length: 5 }).map((_, i) => <RowSkeleton key={i} />)
+            Array.from({ length: 5 }).map((_, i) => (
+              <RowSkeleton key={i} showAssignee={showAssignee} />
+            ))
           ) : sorted.length === 0 ? (
             <tr>
-              <td colSpan={8}>
+              <td colSpan={colSpan}>
                 <TaskEmptyState
                   variant={hasActiveFilters ? "no-results" : "empty"}
                   onClearFilters={onClearFilters}
@@ -118,6 +125,7 @@ export function TasksTable({
               <TaskRow
                 key={task.id}
                 task={task}
+                showAssignee={showAssignee}
                 onStatusChange={onStatusChange}
                 onDelete={onDelete}
                 onOpen={onOpen}

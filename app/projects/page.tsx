@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { AllProjectsTable } from "@/components/projects/all-projects-table"
-import { OverviewStats } from "@/components/projects/overview-stats"
 import { NewProjectDialog } from "@/components/projects/new-project-dialog"
 import { danielProjects, overflowExtras } from "@/components/projects/data"
 import { cn } from "@/lib/utils"
@@ -83,7 +82,7 @@ export default function ProjectsPage() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
@@ -211,8 +210,6 @@ export default function ProjectsPage() {
             <NewProjectDialog onAdd={(p) => setProjects((prev) => [p, ...prev])} />
           </div>
         </div>
-
-        <OverviewStats projects={filteredProjects} />
 
         <AllProjectsTable projects={filteredProjects} />
       </div>
