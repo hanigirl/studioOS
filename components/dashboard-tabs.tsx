@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useMemo, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TodayContent } from "@/components/dashboard-today/today-content"
@@ -34,28 +34,17 @@ function DashboardTabsImpl({ overview }: DashboardTabsProps) {
   const params = useSearchParams()
   const urlTab = params.get("tab")
 
-  // Initial value: URL > localStorage > "overview". We can't read localStorage
-  // synchronously on the server (output: export → static), so the initial
-  // render uses URL or default and we hydrate from storage in an effect.
-  const initial: TabValue = isTabValue(urlTab) ? urlTab : "overview"
-  const [value, setValue] = useState<TabValue>(initial)
-
-  // On mount, if the URL didn't pin a tab, hydrate from localStorage.
-  useEffect(() => {
-    if (isTabValue(urlTab)) {
-      setValue(urlTab)
-      return
-    }
+  const [storedTab, setStoredTab] = useState<TabValue>(() => {
+    if (typeof window === "undefined") return "overview"
     try {
       const stored = localStorage.getItem(STORAGE_KEY)
-      if (isTabValue(stored)) {
-        setValue(stored)
-      }
-    } catch {
-      // localStorage unavailable (private mode, SSR) — silently ignore.
-    }
-    // We deliberately re-run this when urlTab changes so a deep-link wins.
-  }, [urlTab])
+      if (isTabValue(stored)) return stored
+    } catch {}
+    return "overview"
+  })
+
+  // URL param takes priority over stored tab.
+  const value: TabValue = isTabValue(urlTab) ? urlTab : storedTab
 
   // Persist on change.
   useEffect(() => {
@@ -69,7 +58,7 @@ function DashboardTabsImpl({ overview }: DashboardTabsProps) {
   return (
     <Tabs
       value={value}
-      onValueChange={(v) => isTabValue(v) && setValue(v)}
+      onValueChange={(v) => { if (isTabValue(v)) setStoredTab(v) }}
       className="space-y-6"
     >
       <TabsList>

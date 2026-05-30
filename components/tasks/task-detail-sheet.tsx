@@ -53,7 +53,7 @@ export function TaskDetailSheet({
   const [form, setForm] = useState<Task | null>(null)
 
   useEffect(() => {
-    if (task) setForm({ ...task })
+    if (task) setForm({ ...task }) // eslint-disable-line react-hooks/set-state-in-effect
   }, [task])
 
   function set<K extends keyof Task>(key: K, val: Task[K]) {

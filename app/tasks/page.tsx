@@ -14,11 +14,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { TasksTable, type SortKey, type SortDir } from "@/components/tasks/tasks-table"
 import { NewTaskDialog } from "@/components/tasks/new-task-dialog"
 import { TaskDetailSheet } from "@/components/tasks/task-detail-sheet"
 import { mockTasks } from "@/components/tasks/data"
 import { cn } from "@/lib/utils"
+import { FilterPill } from "@/components/ui/filter-pill"
 import type { Task, TaskStatus, TaskPriority } from "@/components/tasks/types"
 
 // ── types ────────────────────────────────────────────────────────────────────
@@ -69,6 +78,11 @@ export default function TasksPage() {
 
   const uniqueProjects = useMemo(
     () => Array.from(new Set(tasks.map((t) => t.project))).sort(),
+    [tasks]
+  )
+
+  const uniqueProjectCount = useMemo(
+    () => new Set(tasks.map((t) => t.project)).size,
     [tasks]
   )
 
@@ -149,7 +163,7 @@ export default function TasksPage() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="space-y-6">
+      <div className="space-y-5">
 
         {/* Page header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -187,21 +201,16 @@ export default function TasksPage() {
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {PRIORITIES.map((p) => (
-                        <button
+                        <FilterPill
                           key={p}
-                          type="button"
+                          size="sm"
+                          active={filters.priorities.includes(p)}
                           onClick={() =>
                             setFilters((f) => ({ ...f, priorities: toggle(f.priorities, p) }))
                           }
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                            filters.priorities.includes(p)
-                              ? "bg-primary text-primary-foreground"
-                              : "border border-border text-foreground hover:bg-accent"
-                          )}
                         >
                           {p}
-                        </button>
+                        </FilterPill>
                       ))}
                     </div>
                   </div>
@@ -213,21 +222,16 @@ export default function TasksPage() {
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueProjects.map((proj) => (
-                        <button
+                        <FilterPill
                           key={proj}
-                          type="button"
+                          size="sm"
+                          active={filters.projects.includes(proj)}
                           onClick={() =>
                             setFilters((f) => ({ ...f, projects: toggle(f.projects, proj) }))
                           }
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                            filters.projects.includes(proj)
-                              ? "bg-primary text-primary-foreground"
-                              : "border border-border text-foreground hover:bg-accent"
-                          )}
                         >
                           {proj}
-                        </button>
+                        </FilterPill>
                       ))}
                     </div>
                   </div>
@@ -239,21 +243,16 @@ export default function TasksPage() {
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueAssignees.map((name) => (
-                        <button
+                        <FilterPill
                           key={name}
-                          type="button"
+                          size="sm"
+                          active={filters.assignees.includes(name)}
                           onClick={() =>
                             setFilters((f) => ({ ...f, assignees: toggle(f.assignees, name) }))
                           }
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                            filters.assignees.includes(name)
-                              ? "bg-primary text-primary-foreground"
-                              : "border border-border text-foreground hover:bg-accent"
-                          )}
                         >
                           {name}
-                        </button>
+                        </FilterPill>
                       ))}
                     </div>
                   </div>
@@ -274,21 +273,6 @@ export default function TasksPage() {
               </PopoverContent>
             </Popover>
 
-            {/* Sort */}
-            <Select value={sortSelectValue} onValueChange={handleSortSelect}>
-              <SelectTrigger className="w-auto gap-1.5">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent align="end">
-                <SelectItem value="dueDate-asc">Due date (earliest)</SelectItem>
-                <SelectItem value="dueDate-desc">Due date (latest)</SelectItem>
-                <SelectItem value="priority-desc">Priority (high first)</SelectItem>
-                <SelectItem value="priority-asc">Priority (low first)</SelectItem>
-                <SelectItem value="createdAt-desc">Recently created</SelectItem>
-                <SelectItem value="project-asc">Project (A–Z)</SelectItem>
-              </SelectContent>
-            </Select>
-
             {/* New task */}
             <Button onClick={() => setNewTaskOpen(true)}>
               <Plus />
@@ -297,46 +281,14 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Tabs + search + table */}
-        <div className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            {/* View tabs: My Tasks / All Tasks */}
-            <div className="flex gap-1.5">
-              {VIEW_TABS.map((tab) => (
-                <button
-                  key={tab.value}
-                  type="button"
-                  onClick={() => setActiveTab(tab.value)}
-                  className={cn(
-                    "inline-flex items-center rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-                    activeTab === tab.value
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border text-foreground hover:bg-accent"
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Status filter + Search */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Select
-                value={statusFilter}
-                onValueChange={(v) => setStatusFilter(v as StatusFilter)}
-              >
-                <SelectTrigger className="h-8 w-auto gap-1.5 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent align="end">
-                  {STATUS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
+        {/* Card: title + controls + table — mirrors AllProjectsTable structure */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Tasks</CardTitle>
+            <CardDescription>
+              {tasks.length} task{tasks.length !== 1 ? "s" : ""} across {uniqueProjectCount} project{uniqueProjectCount !== 1 ? "s" : ""}
+            </CardDescription>
+            <CardAction>
               <div className="relative">
                 <Search
                   className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground"
@@ -345,27 +297,76 @@ export default function TasksPage() {
                 <Input
                   type="search"
                   placeholder="Search tasks..."
-                  className="h-8 w-full sm:w-48 pl-8 text-sm"
+                  className="h-8 w-52 pl-8 text-sm"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-            </div>
-          </div>
+            </CardAction>
+          </CardHeader>
 
-          <TasksTable
-            tasks={visibleTasks}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            hasActiveFilters={hasActiveFilters}
-            showAssignee={showAssignee}
-            onStatusChange={handleStatusChange}
-            onDelete={handleDelete}
-            onOpen={handleOpen}
-            onClearFilters={clearFilters}
-            onNewTask={() => setNewTaskOpen(true)}
-          />
-        </div>
+          <CardContent className="space-y-4 px-6 pb-6">
+            {/* View tabs + Status + Sort */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex gap-1.5">
+                {VIEW_TABS.map((tab) => (
+                  <FilterPill
+                    key={tab.value}
+                    active={activeTab === tab.value}
+                    onClick={() => setActiveTab(tab.value)}
+                  >
+                    {tab.label}
+                  </FilterPill>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Select
+                  value={statusFilter}
+                  onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+                >
+                  <SelectTrigger className="h-8 w-auto gap-1.5 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {STATUS_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={sortSelectValue} onValueChange={handleSortSelect}>
+                  <SelectTrigger className="h-8 w-auto gap-1.5 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    <SelectItem value="dueDate-asc">Due date (earliest)</SelectItem>
+                    <SelectItem value="dueDate-desc">Due date (latest)</SelectItem>
+                    <SelectItem value="priority-desc">Priority (high first)</SelectItem>
+                    <SelectItem value="priority-asc">Priority (low first)</SelectItem>
+                    <SelectItem value="createdAt-desc">Recently created</SelectItem>
+                    <SelectItem value="project-asc">Project (A–Z)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <TasksTable
+              tasks={visibleTasks}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              hasActiveFilters={hasActiveFilters}
+              showAssignee={showAssignee}
+              onStatusChange={handleStatusChange}
+              onDelete={handleDelete}
+              onOpen={handleOpen}
+              onClearFilters={clearFilters}
+              onNewTask={() => setNewTaskOpen(true)}
+            />
+          </CardContent>
+        </Card>
       </div>
 
       <NewTaskDialog

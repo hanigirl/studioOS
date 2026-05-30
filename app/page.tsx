@@ -13,28 +13,24 @@ export default function Home() {
           value="34"
           change="+12% from last week"
           icon={CheckCircle}
-          color="emerald"
         />
         <StatCard
           title="To Do"
           value="12"
           change="-3 from last week"
           icon={ListTodo}
-          color="blue"
         />
         <StatCard
           title="Weekly Rating"
           value="4.8"
           change="+0.3 from last week"
           icon={Star}
-          color="amber"
         />
         <StatCard
           title="Active Clients"
           value="8"
           change="+2 from last month"
           icon={Users}
-          color="violet"
         />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">

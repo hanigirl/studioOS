@@ -21,19 +21,19 @@ const chartConfig = {
 
 export function TeamWorkloadChart({ data }: { data: WorkloadDataPoint[] }) {
   return (
-    <Card>
-      <CardHeader className="px-4 py-3 pb-1">
-        <CardTitle className="text-sm font-medium">Team Workload</CardTitle>
+    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+      <CardHeader className="px-6 pb-2">
+        <CardTitle className="text-base font-semibold">Team Workload</CardTitle>
         <CardDescription className="text-xs">Active tasks per team member</CardDescription>
       </CardHeader>
-      <CardContent className="px-4 pb-3 pt-0">
+      <CardContent className="px-6 pb-0 pt-0">
         {data.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-8">
             <BarChart3 className="size-7 text-muted-foreground/30" aria-hidden />
             <p className="text-sm font-medium text-muted-foreground">No data for this period</p>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[120px] w-full">
+          <ChartContainer config={chartConfig} className="h-[180px] w-full">
             <BarChart layout="vertical" data={data}>
               <CartesianGrid horizontal={false} />
               <XAxis type="number" tickLine={false} axisLine={false} tickMargin={8} />

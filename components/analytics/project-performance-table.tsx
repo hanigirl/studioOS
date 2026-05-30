@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
+import { TaskProgressBar } from "@/components/ui/progress-bar"
 import { statusStyles } from "@/components/projects/status-styles"
 import type { ProjectPerformanceRow } from "./types"
 
@@ -18,41 +19,21 @@ function formatRevenue(value: number) {
   return `$${value.toLocaleString()}`
 }
 
-function ProgressBar({ done, total }: { done: number; total: number }) {
-  const pct = total === 0 ? 0 : Math.round((done / total) * 100)
-  const complete = done === total
-  return (
-    <div className="flex items-center gap-2 min-w-[80px]">
-      <div className="h-1 flex-1 overflow-hidden rounded-full bg-muted">
-        <div
-          className={cn(
-            "h-full rounded-full transition-all duration-300",
-            complete ? "bg-emerald-500" : "bg-primary"
-          )}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
-      <span className="text-xs tabular-nums text-muted-foreground shrink-0 w-[28px] text-right">
-        {pct}%
-      </span>
-    </div>
-  )
-}
 
 export function ProjectPerformanceTable({ rows }: { rows: ProjectPerformanceRow[] }) {
   const visible = rows.slice(0, ROW_LIMIT)
   const hidden  = rows.length - visible.length
 
   return (
-    <Card>
-      <CardHeader className="px-4 py-3 pb-1">
-        <CardTitle className="text-sm font-medium">Project Performance</CardTitle>
+    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+      <CardHeader className="px-6 pb-2">
+        <CardTitle className="text-base font-semibold">Project Performance</CardTitle>
       </CardHeader>
       <CardContent className="px-0 pb-0">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead className="pl-4 w-[180px]">Project</TableHead>
+              <TableHead className="pl-6 w-[180px] text-sm">Project</TableHead>
               <TableHead>Client</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="min-w-[90px]">Progress</TableHead>
@@ -71,7 +52,7 @@ export function ProjectPerformanceTable({ rows }: { rows: ProjectPerformanceRow[
             ) : (
               visible.map((row) => (
                 <TableRow key={row.id} className="h-9">
-                  <TableCell className="pl-4 py-1.5 w-[180px]">
+                  <TableCell className="pl-6 py-1.5 w-[180px]">
                     <span className="text-sm font-medium leading-tight truncate block max-w-[160px]">
                       {row.name}
                     </span>
@@ -81,7 +62,7 @@ export function ProjectPerformanceTable({ rows }: { rows: ProjectPerformanceRow[
                   </TableCell>
                   <TableCell className="py-1.5">
                     <div className="flex items-center gap-1.5">
-                      <span className={cn("inline-flex rounded-full px-2 py-0.5 text-xs font-medium", statusStyles[row.status])}>
+                      <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[row.status])}>
                         {row.status}
                       </span>
                       {row.overdueTasks > 0 && (
@@ -92,7 +73,7 @@ export function ProjectPerformanceTable({ rows }: { rows: ProjectPerformanceRow[
                     </div>
                   </TableCell>
                   <TableCell className="py-1.5">
-                    <ProgressBar done={row.tasksDone} total={row.tasksTotal} />
+                    <TaskProgressBar done={row.tasksDone} total={row.tasksTotal} compact size="sm" />
                   </TableCell>
                   <TableCell className="pr-4 py-1.5 tabular-nums text-sm">
                     {formatRevenue(row.revenue) ?? (
@@ -105,7 +86,7 @@ export function ProjectPerformanceTable({ rows }: { rows: ProjectPerformanceRow[
           </TableBody>
         </Table>
         {hidden > 0 && (
-          <div className="px-4 py-2 border-t border-border">
+          <div className="border-t border-border px-6 pt-[19px] pb-[5px]">
             <p className="text-xs text-muted-foreground">+{hidden} more project{hidden !== 1 ? "s" : ""}</p>
           </div>
         )}

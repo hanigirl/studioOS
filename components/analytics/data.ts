@@ -1,3 +1,10 @@
+import {
+  AlertCircle,
+  CircleCheckBig,
+  DollarSign,
+  FolderOpen,
+  Users,
+} from "lucide-react"
 import type {
   AnalyticsData,
   ClientDataPoint,
@@ -119,11 +126,11 @@ const PROJECT_ROWS: ProjectPerformanceRow[] = [
 export const analyticsData: Record<TimeRange, AnalyticsData> = {
   "7d": {
     kpis: [
-      { label: "Monthly Revenue",    value: "$3,580",  delta: "+8% vs prev 7d",   deltaPositive: true  },
-      { label: "Active Projects",    value: "6",       delta: "no change",         deltaPositive: true  },
-      { label: "Completed Tasks",    value: "19",      delta: "+18% vs prev 7d",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 7d",     deltaPositive: false },
-      { label: "Avg Tasks / Member", value: "3.8",     delta: "+5% vs prev 7d",    deltaPositive: true  },
+      { label: "Monthly Revenue",    value: "$3,580",  delta: "+8% vs prev 7d",   deltaPositive: true,  icon: DollarSign     },
+      { label: "Active Projects",    value: "6",       delta: "no change",         deltaPositive: true,  icon: FolderOpen     },
+      { label: "Completed Tasks",    value: "19",      delta: "+18% vs prev 7d",   deltaPositive: true,  icon: CircleCheckBig },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 7d",     deltaPositive: false, icon: AlertCircle    },
+      { label: "Avg Tasks / Member", value: "3.8",     delta: "+5% vs prev 7d",    deltaPositive: true,  icon: Users          },
     ],
     revenue: [
       { period: "Sun", revenue: 380  },
@@ -151,11 +158,11 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
 
   "30d": {
     kpis: [
-      { label: "Monthly Revenue",    value: "$13,700", delta: "+11% vs prev 30d",  deltaPositive: true  },
-      { label: "Active Projects",    value: "6",       delta: "no change",          deltaPositive: true  },
-      { label: "Completed Tasks",    value: "35",      delta: "+18% vs prev 30d",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 30d",     deltaPositive: false },
-      { label: "Avg Tasks / Member", value: "7.0",     delta: "+9% vs prev 30d",    deltaPositive: true  },
+      { label: "Monthly Revenue",    value: "$13,700", delta: "+11% vs prev 30d",  deltaPositive: true,  icon: DollarSign     },
+      { label: "Active Projects",    value: "6",       delta: "no change",          deltaPositive: true,  icon: FolderOpen     },
+      { label: "Completed Tasks",    value: "35",      delta: "+18% vs prev 30d",   deltaPositive: true,  icon: CircleCheckBig },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 30d",     deltaPositive: false, icon: AlertCircle    },
+      { label: "Avg Tasks / Member", value: "7.0",     delta: "+9% vs prev 30d",    deltaPositive: true,  icon: Users          },
     ],
     revenue: [
       { period: "Wk 1", revenue: 2800 },
@@ -177,11 +184,11 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
 
   "3m": {
     kpis: [
-      { label: "Monthly Revenue",    value: "$15,200", delta: "+12% vs prev 3m",   deltaPositive: true  },
-      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 3m",     deltaPositive: true  },
-      { label: "Completed Tasks",    value: "54",      delta: "+20% vs prev 3m",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 3m",     deltaPositive: false },
-      { label: "Avg Tasks / Member", value: "10.8",    delta: "+10% vs prev 3m",   deltaPositive: true  },
+      { label: "Monthly Revenue",    value: "$15,200", delta: "+12% vs prev 3m",   deltaPositive: true,  icon: DollarSign     },
+      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 3m",     deltaPositive: true,  icon: FolderOpen     },
+      { label: "Completed Tasks",    value: "54",      delta: "+20% vs prev 3m",   deltaPositive: true,  icon: CircleCheckBig },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 3m",     deltaPositive: false, icon: AlertCircle    },
+      { label: "Avg Tasks / Member", value: "10.8",    delta: "+10% vs prev 3m",   deltaPositive: true,  icon: Users          },
     ],
     revenue: [
       { period: "Feb", revenue: 12200 },
@@ -201,11 +208,11 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
 
   "6m": {
     kpis: [
-      { label: "Monthly Revenue",    value: "$18,400", delta: "+14% vs prev 6m",   deltaPositive: true  },
-      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 6m",     deltaPositive: true  },
-      { label: "Completed Tasks",    value: "87",      delta: "+23% vs prev 6m",   deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 6m",     deltaPositive: false },
-      { label: "Avg Tasks / Member", value: "17.4",    delta: "+4% vs prev 6m",    deltaPositive: true  },
+      { label: "Monthly Revenue",    value: "$18,400", delta: "+14% vs prev 6m",   deltaPositive: true,  icon: DollarSign     },
+      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 6m",     deltaPositive: true,  icon: FolderOpen     },
+      { label: "Completed Tasks",    value: "87",      delta: "+23% vs prev 6m",   deltaPositive: true,  icon: CircleCheckBig },
+      { label: "Overdue Tasks",      value: "3",       delta: "−1 vs prev 6m",     deltaPositive: false, icon: AlertCircle    },
+      { label: "Avg Tasks / Member", value: "17.4",    delta: "+4% vs prev 6m",    deltaPositive: true,  icon: Users          },
     ],
     revenue: [
       { period: "Nov", revenue: 10400 },
@@ -231,11 +238,11 @@ export const analyticsData: Record<TimeRange, AnalyticsData> = {
 
   "12m": {
     kpis: [
-      { label: "Monthly Revenue",    value: "$22,800", delta: "+18% vs prev 12m",  deltaPositive: true  },
-      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 12m",    deltaPositive: true  },
-      { label: "Completed Tasks",    value: "156",     delta: "+31% vs prev 12m",  deltaPositive: true  },
-      { label: "Overdue Tasks",      value: "3",       delta: "−2 vs prev 12m",    deltaPositive: false },
-      { label: "Avg Tasks / Member", value: "31.2",    delta: "+12% vs prev 12m",  deltaPositive: true  },
+      { label: "Monthly Revenue",    value: "$22,800", delta: "+18% vs prev 12m",  deltaPositive: true,  icon: DollarSign     },
+      { label: "Active Projects",    value: "6",       delta: "+2 vs prev 12m",    deltaPositive: true,  icon: FolderOpen     },
+      { label: "Completed Tasks",    value: "156",     delta: "+31% vs prev 12m",  deltaPositive: true,  icon: CircleCheckBig },
+      { label: "Overdue Tasks",      value: "3",       delta: "−2 vs prev 12m",    deltaPositive: false, icon: AlertCircle    },
+      { label: "Avg Tasks / Member", value: "31.2",    delta: "+12% vs prev 12m",  deltaPositive: true,  icon: Users          },
     ],
     revenue: [
       { period: "May", revenue: 7200  },

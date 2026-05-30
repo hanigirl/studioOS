@@ -21,16 +21,16 @@ const chartConfig = {
 
 export function RevenueChart({ data }: { data: RevenueDataPoint[] }) {
   return (
-    <Card className="lg:col-span-4">
-      <CardHeader className="px-4 py-3 pb-1">
-        <CardTitle className="text-sm font-medium">Revenue Over Time</CardTitle>
+    <Card className="lg:col-span-4 transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+      <CardHeader className="px-6 pb-2">
+        <CardTitle className="text-base font-semibold">Revenue Over Time</CardTitle>
         <CardDescription className="text-xs">Total studio revenue by period</CardDescription>
       </CardHeader>
-      <CardContent className="px-4 pb-3 pt-0">
+      <CardContent className="px-6 pb-0 pt-0">
         {data.length === 0 ? (
           <EmptyChart />
         ) : (
-          <ChartContainer config={chartConfig} className="h-[120px] w-full">
+          <ChartContainer config={chartConfig} className="h-[200px] w-full">
             <LineChart data={data}>
               <CartesianGrid vertical={false} />
               <XAxis

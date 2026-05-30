@@ -22,7 +22,7 @@ import type { NextTask, PulseProject, TaskPriority } from "./types"
 // Same priority palette as components/kanban-board.tsx so a task looks
 // identical wherever it appears in the product.
 const priorityStyles: Record<TaskPriority, string> = {
-  High: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  High: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
   Medium:
     "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
   Low: "bg-muted text-muted-foreground",

@@ -122,23 +122,21 @@ export function TaskRow({ task, showAssignee = true, onStatusChange, onDelete, o
         <span className="text-sm text-muted-foreground">{task.project}</span>
       </TableCell>
 
-      {/* Assignee — hidden on small screens and in My Tasks view */}
-      {showAssignee && (
-        <TableCell className="hidden sm:table-cell">
-          {task.assignee ? (
-            <div className="flex items-center gap-2">
-              <Avatar size="sm">
-                <AvatarFallback className={cn("text-white text-xs", task.assignee.color)}>
-                  {task.assignee.initials}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm hidden lg:inline">{task.assignee.name}</span>
-            </div>
-          ) : (
-            <span className="text-xs text-muted-foreground/40">—</span>
-          )}
-        </TableCell>
-      )}
+      {/* Assignee — hidden on small screens; content hidden in My Tasks view */}
+      <TableCell className="hidden sm:table-cell">
+        {showAssignee && (task.assignee ? (
+          <div className="flex items-center gap-2">
+            <Avatar size="sm">
+              <AvatarFallback className={cn("text-white text-xs", task.assignee.color)}>
+                {task.assignee.initials}
+              </AvatarFallback>
+            </Avatar>
+            <span className="text-sm hidden lg:inline">{task.assignee.name}</span>
+          </div>
+        ) : (
+          <span className="text-xs text-muted-foreground/40">—</span>
+        ))}
+      </TableCell>
 
       {/* Due date */}
       <TableCell>
@@ -160,7 +158,7 @@ export function TaskRow({ task, showAssignee = true, onStatusChange, onDelete, o
               {formatDate(task.dueDate)}
             </span>
             {overdue && (
-              <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
+              <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
                 Overdue
               </span>
             )}

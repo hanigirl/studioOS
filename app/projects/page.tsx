@@ -10,6 +10,7 @@ import { AllProjectsTable } from "@/components/projects/all-projects-table"
 import { NewProjectDialog } from "@/components/projects/new-project-dialog"
 import { danielProjects, overflowExtras } from "@/components/projects/data"
 import { cn } from "@/lib/utils"
+import { FilterPill } from "@/components/ui/filter-pill"
 import type { PulseProject } from "@/components/projects/types"
 
 interface FilterState {
@@ -118,19 +119,14 @@ export default function ProjectsPage() {
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueClients.map((client) => (
-                        <button
+                        <FilterPill
                           key={client}
-                          type="button"
+                          size="sm"
+                          active={filters.clients.includes(client)}
                           onClick={() => toggleClient(client)}
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                            filters.clients.includes(client)
-                              ? "bg-primary text-primary-foreground"
-                              : "border border-border text-foreground hover:bg-accent"
-                          )}
                         >
                           {client}
-                        </button>
+                        </FilterPill>
                       ))}
                     </div>
                   </div>
@@ -142,19 +138,14 @@ export default function ProjectsPage() {
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {uniqueMembers.map((member) => (
-                        <button
+                        <FilterPill
                           key={member}
-                          type="button"
+                          size="sm"
+                          active={filters.members.includes(member)}
                           onClick={() => toggleMember(member)}
-                          className={cn(
-                            "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                            filters.members.includes(member)
-                              ? "bg-primary text-primary-foreground"
-                              : "border border-border text-foreground hover:bg-accent"
-                          )}
                         >
                           {member}
-                        </button>
+                        </FilterPill>
                       ))}
                     </div>
                   </div>

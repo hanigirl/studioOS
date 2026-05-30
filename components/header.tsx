@@ -8,27 +8,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
 function ThemeToggle() {
-  const [mounted, setMounted] = useState(false)
-  const [theme, setTheme] = useState<"light" | "dark">("light")
-
-  useEffect(() => {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light"
     const stored = localStorage.getItem("theme")
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    const initial = stored === "dark" || (!stored && prefersDark) ? "dark" : "light"
-    setTheme(initial)
-    document.documentElement.classList.toggle("dark", initial === "dark")
-    setMounted(true)
-  }, [])
+    return stored === "dark" || (!stored && prefersDark) ? "dark" : "light"
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark")
+  }, [theme])
 
   function toggle() {
     const next = theme === "light" ? "dark" : "light"
     setTheme(next)
     localStorage.setItem("theme", next)
     document.documentElement.classList.toggle("dark", next === "dark")
-  }
-
-  if (!mounted) {
-    return <Button variant="ghost" size="icon" disabled><Moon className="size-5" /><span className="sr-only">Toggle theme</span></Button>
   }
 
   return (

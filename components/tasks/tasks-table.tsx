@@ -46,14 +46,14 @@ function RowSkeleton({ showAssignee }: { showAssignee: boolean }) {
       <TableCell><Skeleton className="h-5 w-20 rounded-full" /></TableCell>
       <TableCell><Skeleton className="h-5 w-16 rounded-full" /></TableCell>
       <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-28" /></TableCell>
-      {showAssignee && (
-        <TableCell className="hidden sm:table-cell">
+      <TableCell className="hidden sm:table-cell">
+        {showAssignee && (
           <div className="flex items-center gap-2">
             <Skeleton className="size-6 rounded-full" />
             <Skeleton className="h-4 w-16 hidden lg:block" />
           </div>
-        </TableCell>
-      )}
+        )}
+      </TableCell>
       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
       <TableCell className="w-10" />
     </TableRow>
@@ -88,10 +88,10 @@ export function TasksTable({
   onNewTask,
 }: TasksTableProps) {
   const sorted = sortTasks(tasks, sortKey, sortDir)
-  const colSpan = showAssignee ? 8 : 7
+  const colSpan = 8
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border">
+    <div className="overflow-x-auto min-h-[480px]">
       <Table>
         <TableHeader>
           <TableRow className="border-b border-border hover:bg-transparent">
@@ -100,7 +100,7 @@ export function TasksTable({
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
             <TableHead className="hidden md:table-cell">Project</TableHead>
-            {showAssignee && <TableHead className="hidden sm:table-cell">Assignee</TableHead>}
+            <TableHead className="hidden sm:table-cell">Assignee</TableHead>
             <TableHead>Due Date</TableHead>
             <TableHead className="w-10" />
           </TableRow>

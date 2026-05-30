@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react"
 import type { ProjectStatus } from "@/components/projects/types"
 
 export type TimeRange = "7d" | "30d" | "3m" | "6m" | "12m"
@@ -7,6 +8,7 @@ export interface KpiData {
   value: string        // pre-formatted: "$18,400" | "87"
   delta: string        // "+14%" | "−1"
   deltaPositive: boolean
+  icon: LucideIcon
 }
 
 export interface RevenueDataPoint {

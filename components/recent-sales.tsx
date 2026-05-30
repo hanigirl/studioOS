@@ -10,51 +10,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { danielProjects, overflowExtras } from "@/components/projects/data"
+import { statusStyles } from "@/components/projects/status-styles"
 
-const projects = [
-  {
-    name: "App Redesign",
-    client: "Wix",
-    avatar: "/logos/wix.png",
-    status: "In Progress" as const,
-    deadline: "Apr 12",
-  },
-  {
-    name: "Brand Identity",
-    client: "Monday",
-    avatar: "/logos/monday.png",
-    status: "In Review" as const,
-    deadline: "Apr 5",
-  },
-  {
-    name: "Marketing Kit",
-    client: "Fiverr",
-    avatar: "/logos/fiverr.png",
-    status: "In Progress" as const,
-    deadline: "Apr 18",
-  },
-  {
-    name: "Dashboard UI",
-    client: "Slack",
-    avatar: "/logos/slack.png",
-    status: "In Review" as const,
-    deadline: "Apr 2",
-  },
-  {
-    name: "Social Templates",
-    client: "Meta",
-    avatar: "/logos/meta.png",
-    status: "In Progress" as const,
-    deadline: "Apr 24",
-  },
-  {
-    name: "Landing Page",
-    client: "Zoom",
-    avatar: "/logos/zoom.png",
-    status: "In Progress" as const,
-    deadline: "Apr 30",
-  },
-]
+const projects = [...danielProjects, ...overflowExtras]
 
 export function RecentSales() {
   return (
@@ -81,7 +40,7 @@ export function RecentSales() {
           {projects.map((project) => (
             <div key={project.name} className="flex items-center gap-3">
               <Avatar size="sm">
-                <AvatarImage src={project.avatar} alt={project.client} />
+                <AvatarImage src={project.clientLogo} alt={project.client} />
                 <AvatarFallback>{project.client[0]}</AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
@@ -94,16 +53,14 @@ export function RecentSales() {
               </div>
               <span
                 className={cn(
-                  "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium",
-                  project.status === "In Review"
-                    ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                    : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                  "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
+                  statusStyles[project.status]
                 )}
               >
                 {project.status}
               </span>
               <span className="shrink-0 text-xs text-muted-foreground w-14 text-right">
-                {project.deadline}
+                {project.due}
               </span>
             </div>
           ))}

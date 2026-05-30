@@ -40,6 +40,8 @@ import {
   AvatarGroup,
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
+import { TaskProgressBar } from "@/components/ui/progress-bar"
+import { FilterPill } from "@/components/ui/filter-pill"
 import { statusStyles } from "./status-styles"
 import type { ProjectStatus, PulseProject } from "./types"
 
@@ -62,35 +64,6 @@ const STATUS_ORDER: Record<ProjectStatus, number> = {
 
 // ── shared sub-components ────────────────────────────────────────────────────
 
-function TaskProgress({ done, total, compact = false }: { done: number; total: number; compact?: boolean }) {
-  const pct = total === 0 ? 0 : Math.round((done / total) * 100)
-  const complete = done === total
-  const bar = (
-    <div className={cn("h-1.5 overflow-hidden rounded-full bg-muted", compact ? "flex-1" : "w-full")}>
-      <div
-        className={cn("h-full rounded-full transition-all duration-300", complete ? "bg-emerald-500" : "bg-primary")}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
-  )
-  if (compact) {
-    return (
-      <div className="flex items-center gap-2 min-w-[100px]">
-        {bar}
-        <span className="text-xs tabular-nums text-muted-foreground shrink-0 w-[30px] text-right">{pct}%</span>
-      </div>
-    )
-  }
-  return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-xs text-muted-foreground tabular-nums">{done} / {total}</span>
-        <span className="text-xs font-medium tabular-nums">{pct}%</span>
-      </div>
-      {bar}
-    </div>
-  )
-}
 
 function ProjectMenu({ figmaUrl, projectId }: { figmaUrl?: string; projectId: string }) {
   return (
@@ -134,7 +107,7 @@ function ProjectCard({ project }: { project: PulseProject }) {
     <div className="group relative flex flex-col rounded-xl border bg-card text-card-foreground shadow-sm transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
       {/* Status badge + menu */}
       <div className="flex items-center justify-between px-5 pt-5">
-        <span className={cn("inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium", statusStyles[project.status])}>
+        <span className={cn("inline-flex rounded-full px-2.5 py-1 text-xs font-medium", statusStyles[project.status])}>
           {project.status}
         </span>
         <ProjectMenu figmaUrl={project.figmaUrl} projectId={project.id} />
@@ -176,7 +149,7 @@ function ProjectCard({ project }: { project: PulseProject }) {
 
       {/* Progress + Figma link */}
       <div className="px-5 pt-3 pb-4">
-        <TaskProgress done={project.tasksDone} total={project.tasksTotal} />
+        <TaskProgressBar done={project.tasksDone} total={project.tasksTotal} />
       </div>
       {project.figmaUrl && (
         <div className="border-t border-border px-5 py-3">
@@ -262,7 +235,7 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <span className={cn("inline-flex cursor-pointer rounded-full px-2.5 py-0.5 text-xs font-medium outline-none", statusStyles[status])}>
+            <span className={cn("inline-flex cursor-pointer rounded-full px-2.5 py-1 text-xs font-medium outline-none", statusStyles[status])}>
               {status}
             </span>
           </DropdownMenuTrigger>
@@ -290,14 +263,14 @@ function ProjectTableRow({ project, isLast }: { project: PulseProject; isLast: b
             {project.due}
           </span>
           {isOverdue && (
-            <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
+            <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
               Overdue
             </span>
           )}
         </div>
       </td>
       <td className="px-3 py-3 min-w-[100px]">
-        <TaskProgress done={project.tasksDone} total={project.tasksTotal} compact />
+        <TaskProgressBar done={project.tasksDone} total={project.tasksTotal} compact />
       </td>
       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
         {project.figmaUrl ? (
@@ -409,7 +382,14 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [isLoading, setIsLoading] = useState(true)
   const [active,   setActive]   = useState<TabValue>("all")
   const [search,   setSearch]   = useState("")
-  const [view,     setView]     = useState<ViewMode>("grid")
+  const [view,     setView]     = useState<ViewMode>(() => {
+    if (typeof window === "undefined") return "grid"
+    try {
+      const saved = localStorage.getItem("projects-view-mode")
+      if (saved === "grid" || saved === "table") return saved as ViewMode
+    } catch {}
+    return "grid"
+  })
   const [sortCol,  setSortCol]  = useState<SortCol | null>(null)
   const [sortDir,  setSortDir]  = useState<SortDir>("asc")
 
@@ -418,12 +398,6 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     return () => clearTimeout(t)
   }, [])
 
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("projects-view-mode")
-      if (saved === "grid" || saved === "table") setView(saved)
-    } catch {}
-  }, [])
 
 
   function handleSort(col: SortCol) {
@@ -500,22 +474,16 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             {tabs.map((t) => {
               const isActive = active === t.value
               return (
-                <button
+                <FilterPill
                   key={t.value}
-                  type="button"
+                  active={isActive}
                   onClick={() => setActive(t.value)}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border text-foreground hover:bg-accent"
-                  )}
                 >
                   <span>{t.label}</span>
                   <span className={cn("text-[11px]", isActive ? "text-primary-foreground/70" : "text-muted-foreground")}>
                     {countFor(t.value)}
                   </span>
-                </button>
+                </FilterPill>
               )
             })}
           </div>

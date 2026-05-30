@@ -27,12 +27,12 @@ export default function AnalyticsPage() {
 
   return (
     <TooltipProvider delayDuration={200}>
-      <div className="space-y-3">
+      <div className="space-y-5">
 
         {/* Page header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-0.5">
-            <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight">Analytics</h1>
             <p className="text-sm text-muted-foreground">
               Studio performance overview
             </p>
@@ -45,20 +45,20 @@ export default function AnalyticsPage() {
         ) : (
           <>
             {/* KPI cards */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
               {data.kpis.map((kpi) => (
                 <AnalyticsKpiCard key={kpi.label} kpi={kpi} />
               ))}
             </div>
 
             {/* Charts row 1: Revenue (wide) + Status donut */}
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-6">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-6">
               <RevenueChart data={data.revenue} />
               <ProjectsByStatusChart data={data.statusBreakdown} />
             </div>
 
             {/* Charts row 2: Tasks + Workload + Client breakdown */}
-            <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               <TasksCompletedChart data={data.tasks} />
               <TeamWorkloadChart data={data.workload} />
               <ClientBreakdownChart data={data.clientBreakdown} />
