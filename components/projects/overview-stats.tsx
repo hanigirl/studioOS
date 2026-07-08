@@ -22,17 +22,20 @@ export function OverviewStats() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {stats.map((s) => (
-        <Card key={s.title}>
+        <Card
+          key={s.title}
+          className="bg-destructive text-destructive-foreground"
+        >
           <CardHeader>
             <CardTitle className="text-base font-medium leading-6">
               {s.title}
             </CardTitle>
-            <p className="text-2xl font-bold leading-8 tracking-tight text-card-foreground">
+            <p className="text-2xl font-bold leading-8 tracking-tight">
               {s.value}
             </p>
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">{s.caption}</p>
+            <p className="text-xs text-destructive-foreground/80">{s.caption}</p>
           </CardContent>
         </Card>
       ))}
