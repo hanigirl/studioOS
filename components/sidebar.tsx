@@ -1,16 +1,14 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
-import logoD from "@/public/assets/Logo-D.png"
 import { usePathname } from "next/navigation"
 import {
   Home,
-  BarChart3,
-  Settings,
-  ChevronsUpDown,
   FolderOpen,
   ListTodo,
+  ChartPie,
+  Settings,
+  ChevronsUpDown,
   Users,
 } from "lucide-react"
 import {
@@ -24,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const mainNav = [
   { label: "Dashboard", href: "/", icon: Home },
@@ -32,20 +31,27 @@ const mainNav = [
 ]
 
 const secondaryNav = [
-  { label: "Analytics", href: "/analytics", icon: BarChart3 },
+  { label: "Analytics", href: "/analytics", icon: ChartPie },
   { label: "Team", href: "/team", icon: Users },
   { label: "Settings", href: "/settings", icon: Settings },
 ]
 
+const userName = "Meyrav Gutshtein"
+
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase()
+}
+
 export function TeamSwitcher() {
   return (
     <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary overflow-hidden p-1.5">
-        <Image src={logoD} alt="Studio OS" className="size-full object-contain" />
-      </div>
+      <Avatar size="sm">
+        <AvatarFallback className="font-bold">{getInitials(userName)}</AvatarFallback>
+      </Avatar>
       <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
-        <span className="truncate font-semibold">Studio OS</span>
-        <span className="truncate text-xs text-sidebar-foreground/70">AI Design Studio</span>
+        <span className="truncate font-semibold">{userName}</span>
+        <span className="truncate text-xs text-sidebar-foreground/70">Manager</span>
       </div>
       <ChevronsUpDown className="size-4 ml-auto" />
     </SidebarMenuButton>
