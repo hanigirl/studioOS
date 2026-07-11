@@ -7,8 +7,8 @@ import { AppSidebar } from "@/components/sidebar";
 import { Header } from "@/components/header";
 
 export const metadata: Metadata = {
-  title: "Studio OS",
-  description: "Studio OS Dashboard",
+  title: "Meyrav Gutshtein",
+  description: "Meyrav Gutshtein Dashboard",
 };
 
 export default function RootLayout({
