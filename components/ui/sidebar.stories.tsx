@@ -50,7 +50,7 @@ export const InsetVariant: Story = {
     <SidebarProvider>
       <Sidebar variant="inset">
         <SidebarHeader>
-          <div className="px-2 py-1 text-sm font-semibold">Studio OS</div>
+          <div className="px-2 py-1 text-sm font-semibold">Meyrav Gutshtein</div>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
