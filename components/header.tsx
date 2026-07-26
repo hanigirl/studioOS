@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 
-const userName = "Meyrav Gutshtein"
+const userName = "Hani Buskila"
 
 function getInitials(name: string) {
   return name
