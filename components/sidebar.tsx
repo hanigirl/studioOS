@@ -22,7 +22,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
 const mainNav = [
   { label: "Dashboard", href: "/", icon: Home },
@@ -36,22 +35,15 @@ const secondaryNav = [
   { label: "Settings", href: "/settings", icon: Settings },
 ]
 
-const userName = "Meyrav Gutshtein"
-
-function getInitials(name: string) {
-  const parts = name.trim().split(/\s+/)
-  return parts.slice(0, 2).map((part) => part[0]).join("").toUpperCase()
-}
-
 export function TeamSwitcher() {
   return (
     <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent">
-      <Avatar size="sm">
-        <AvatarFallback className="font-bold">{getInitials(userName)}</AvatarFallback>
-      </Avatar>
+      <div className="bg-sidebar-primary text-sidebar-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-md text-sm font-semibold">
+        D
+      </div>
       <div className="grid flex-1 text-left text-sm leading-tight min-w-0">
-        <span className="truncate font-semibold">{userName}</span>
-        <span className="truncate text-xs text-sidebar-foreground/70">Manager</span>
+        <span className="truncate font-semibold">Studio OS</span>
+        <span className="truncate text-xs text-sidebar-foreground/70">AI Design Studio</span>
       </div>
       <ChevronsUpDown className="size-4 ml-auto" />
     </SidebarMenuButton>
