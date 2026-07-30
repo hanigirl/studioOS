@@ -1,8 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import { LayoutList, Table2 } from "lucide-react"
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -16,8 +18,11 @@ import {
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
+import { ProjectRow } from "./project-row"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
+
+type ViewMode = "table" | "cards"
 
 const statusStyles: Record<ProjectStatus, string> = {
   Discovery:
@@ -55,6 +60,7 @@ type TabValue = (typeof tabs)[number]["value"]
  */
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
+  const [view, setView] = useState<ViewMode>("table")
 
   const filtered =
     active === "all"
@@ -74,6 +80,36 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           {projects.length} project{projects.length === 1 ? "" : "s"} across
           your clients
         </CardDescription>
+        <CardAction>
+          <div
+            role="group"
+            aria-label="View mode"
+            className="inline-flex rounded-lg border border-border p-0.5"
+          >
+            {(
+              [
+                { value: "table", label: "Table view", icon: Table2 },
+                { value: "cards", label: "Card view", icon: LayoutList },
+              ] as const
+            ).map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setView(value)}
+                aria-pressed={view === value}
+                aria-label={label}
+                className={cn(
+                  "inline-flex size-7 items-center justify-center rounded-md transition-colors",
+                  view === value
+                    ? "bg-muted text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="size-4" aria-hidden />
+              </button>
+            ))}
+          </div>
+        </CardAction>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
         {/* Tabs filter by status — same status axis the kanban uses. */}
@@ -108,7 +144,14 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           })}
         </div>
 
-        {/* Table */}
+        {/* Card-row list or dense table, same filtered data. */}
+        {view === "cards" ? (
+          <div className="flex flex-col gap-3 px-6">
+            {filtered.map((p) => (
+              <ProjectRow key={p.id} project={p} />
+            ))}
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -197,6 +240,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             </tbody>
           </table>
         </div>
+        )}
       </CardContent>
     </Card>
   )
