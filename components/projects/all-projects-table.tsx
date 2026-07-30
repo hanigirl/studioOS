@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Search } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -14,6 +15,7 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar"
+import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
 import { HealthDot } from "./health-badge"
@@ -55,16 +57,23 @@ type TabValue = (typeof tabs)[number]["value"]
  */
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
+  const [query, setQuery] = useState("")
 
-  const filtered =
-    active === "all"
-      ? projects
-      : projects.filter((p) => p.status === active)
+  const q = query.trim().toLowerCase()
+  const matchesQuery = (p: PulseProject) =>
+    q === "" ||
+    p.name.toLowerCase().includes(q) ||
+    p.client.toLowerCase().includes(q)
 
+  const filtered = projects.filter(
+    (p) => (active === "all" || p.status === active) && matchesQuery(p)
+  )
+
+  // Tab counts reflect the current search so they match what the table shows.
   const countFor = (v: TabValue) =>
-    v === "all"
-      ? projects.length
-      : projects.filter((p) => p.status === v).length
+    projects.filter(
+      (p) => (v === "all" || p.status === v) && matchesQuery(p)
+    ).length
 
   return (
     <Card>
@@ -76,8 +85,9 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4 px-0">
-        {/* Tabs filter by status — same status axis the kanban uses. */}
-        <div className="flex flex-wrap gap-2 px-6">
+        {/* Filter row: status tabs on the left, search on the right. */}
+        <div className="flex flex-col gap-3 px-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap gap-2">
           {tabs.map((t) => {
             const isActive = active === t.value
             return (
@@ -106,9 +116,27 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
               </button>
             )
           })}
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search project or client..."
+              aria-label="Search projects by name or client"
+              className="pl-9"
+            />
+          </div>
         </div>
 
-        {/* Table */}
+        {/* Table — or a no-results message when the search/filter matches nothing. */}
+        {filtered.length === 0 ? (
+          <p className="px-6 py-12 text-center text-sm text-muted-foreground">
+            No projects match your search.
+          </p>
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -197,6 +225,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             </tbody>
           </table>
         </div>
+        )}
       </CardContent>
     </Card>
   )
