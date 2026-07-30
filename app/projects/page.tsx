@@ -1,7 +1,7 @@
 import { SlidersHorizontal } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
-import { AllProjectsTable } from "@/components/projects/all-projects-table"
+import { ProjectsTableLoader } from "@/components/projects/projects-table-loader"
 import { NewProjectDialog } from "@/components/projects/new-project-dialog"
 import { OverviewStats } from "@/components/projects/overview-stats"
 import { danielProjects, overflowExtras } from "@/components/projects/data"
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
 
         <OverviewStats />
 
-        <AllProjectsTable projects={projects} />
+        <ProjectsTableLoader projects={projects} />
       </div>
     </TooltipProvider>
   )
