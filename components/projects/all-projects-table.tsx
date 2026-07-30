@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { FilterX, FolderOpen, Plus } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -14,8 +15,10 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
+import { EmptyState } from "./empty-state"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
 
@@ -66,6 +69,32 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
       ? projects.length
       : projects.filter((p) => p.status === v).length
 
+  // No projects at all — the table chrome (tabs, headers) would be noise, so
+  // replace the whole body with a single call-to-action empty state.
+  if (projects.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>All projects</CardTitle>
+          <CardDescription>No projects yet</CardDescription>
+        </CardHeader>
+        <CardContent className="px-0">
+          <EmptyState
+            icon={FolderOpen}
+            title="No projects yet"
+            description="Create your first project to start tracking work across your clients."
+            action={
+              <Button size="sm">
+                <Plus />
+                New Project
+              </Button>
+            }
+          />
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -108,7 +137,24 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           })}
         </div>
 
-        {/* Table */}
+        {/* Table — or a filter-scoped empty state when the active status
+            tab has no matching projects (projects still exist overall). */}
+        {filtered.length === 0 ? (
+          <EmptyState
+            icon={FilterX}
+            title={`No ${active} projects`}
+            description="No projects match this status right now."
+            action={
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setActive("all")}
+              >
+                Clear filter
+              </Button>
+            }
+          />
+        ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -197,6 +243,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             </tbody>
           </table>
         </div>
+        )}
       </CardContent>
     </Card>
   )
