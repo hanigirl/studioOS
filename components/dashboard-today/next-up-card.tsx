@@ -3,7 +3,19 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import type { NextUpItem } from "./types"
+import { cn } from "@/lib/utils"
+import type { NextUpItem, TodayPriority } from "./types"
+
+// Same priority palette as components/kanban-board.tsx,
+// components/projects/project-pulse-card.tsx, and
+// components/dashboard-today/task-row.tsx so a task looks identical
+// wherever it appears in the product.
+const priorityStyles: Record<TodayPriority, string> = {
+  High: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+  Medium:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Low: "bg-muted text-muted-foreground",
+}
 
 export function NextUpCard({ item }: { item: NextUpItem }) {
   return (
@@ -25,9 +37,19 @@ export function NextUpCard({ item }: { item: NextUpItem }) {
               </p>
             </div>
           </div>
-          <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
-            Next Up
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                "inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium",
+                priorityStyles[item.priority]
+              )}
+            >
+              {item.priority}
+            </span>
+            <span className="text-xs uppercase tracking-wider text-muted-foreground font-medium">
+              Next Up
+            </span>
+          </div>
         </div>
 
         <Separator />

@@ -33,6 +33,7 @@ const NEXT_UP: NextUpItem = {
   title: "Finalize profile settings — empty + error states",
   contextLine: "Last edit: 17:42 yesterday — Profile settings — frame 4",
   due: "Due 10:00",
+  priority: "High",
 }
 
 interface MockTask {

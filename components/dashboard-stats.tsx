@@ -6,6 +6,7 @@ interface DashboardStat {
   change: string
   trend: string
   caption: string
+  goodDirection: "up" | "down"
 }
 
 const stats: DashboardStat[] = [
@@ -15,6 +16,7 @@ const stats: DashboardStat[] = [
     change: "+12%",
     trend: "Trending up this week",
     caption: "12% more tasks closed than last week",
+    goodDirection: "up",
   },
   {
     title: "To Do",
@@ -22,6 +24,8 @@ const stats: DashboardStat[] = [
     change: "-3",
     trend: "Down from last week",
     caption: "3 fewer tasks than last week",
+    // A shrinking backlog is good news, unlike the other three cards.
+    goodDirection: "down",
   },
   {
     title: "Weekly Rating",
@@ -29,6 +33,7 @@ const stats: DashboardStat[] = [
     change: "+0.3",
     trend: "Trending up this week",
     caption: "0.3 higher than last week",
+    goodDirection: "up",
   },
   {
     title: "Active Clients",
@@ -36,6 +41,7 @@ const stats: DashboardStat[] = [
     change: "+2",
     trend: "New clients this month",
     caption: "2 more than last month",
+    goodDirection: "up",
   },
 ]
 

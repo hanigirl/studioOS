@@ -1,0 +1,70 @@
+import haniPhoto from "@/public/studioOS/team/hani.jpg"
+import type { TeamMember } from "./types"
+
+export const teamMembers: TeamMember[] = [
+  {
+    id: "hani-buskila",
+    name: "Hani Buskila",
+    title: "Senior UI UX Designer",
+    initials: "HB",
+    color: "bg-emerald-500",
+    photo: haniPhoto.src,
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "tal-rosen",
+    name: "Tal Rosen",
+    title: "Co-Founder & CEO",
+    initials: "TR",
+    color: "bg-blue-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "noa-meir",
+    name: "Noa Meir",
+    title: "Co-Founder & COO",
+    initials: "NM",
+    color: "bg-pink-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "daniel-cohen",
+    name: "Daniel Cohen",
+    title: "Senior UI UX Designer",
+    initials: "DC",
+    color: "bg-emerald-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "maya-levi",
+    name: "Maya Levi",
+    title: "Senior UI UX Designer",
+    initials: "ML",
+    color: "bg-violet-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "jon-ashkenazi",
+    name: "Jon Ashkenazi",
+    title: "Front-End Developer",
+    initials: "JA",
+    color: "bg-amber-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "ada-katz",
+    name: "Ada Katz",
+    title: "Front-End Developer",
+    initials: "AK",
+    color: "bg-teal-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+  {
+    id: "sara-ben-david",
+    name: "Sara Ben-David",
+    title: "Project Manager",
+    initials: "SB",
+    color: "bg-rose-500",
+    socials: { youtube: "#", linkedin: "#", instagram: "#" },
+  },
+]

@@ -1,12 +1,17 @@
-import { Plus, SlidersHorizontal } from "lucide-react"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button"
-import { AllProjectsTable } from "@/components/projects/all-projects-table"
-import { OverviewStats } from "@/components/projects/overview-stats"
-import { danielProjects, overflowExtras } from "@/components/projects/data"
+"use client";
+
+import { useState } from "react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AllProjectsTable } from "@/components/projects/all-projects-table";
+import { NewProjectDialog } from "@/components/projects/new-project-dialog";
+import { OverviewStats } from "@/components/projects/overview-stats";
+import { danielProjects, overflowExtras } from "@/components/projects/data";
+import type { PulseProject } from "@/components/projects/types";
+
+const initialProjects: PulseProject[] = [...danielProjects, ...overflowExtras];
 
 export default function ProjectsPage() {
-  const projects = [...danielProjects, ...overflowExtras]
+  const [projects, setProjects] = useState<PulseProject[]>(initialProjects);
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -19,21 +24,25 @@ export default function ProjectsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <SlidersHorizontal />
-              Filter
-            </Button>
-            <Button size="sm">
-              <Plus />
-              New Project
-            </Button>
+            <NewProjectDialog
+              onCreate={(project) =>
+                setProjects((prev) => [project, ...prev])
+              }
+            />
           </div>
         </div>
 
-        <OverviewStats />
+        <OverviewStats projects={projects} />
 
-        <AllProjectsTable projects={projects} />
+        <AllProjectsTable
+          projects={projects}
+          onStatusChange={(id, status) =>
+            setProjects((prev) =>
+              prev.map((p) => (p.id === id ? { ...p, status } : p))
+            )
+          }
+        />
       </div>
     </TooltipProvider>
-  )
+  );
 }

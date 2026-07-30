@@ -53,6 +53,35 @@ export function HealthBadge({
   )
 }
 
+export function OverdueBadge({
+  daysToDeadline,
+  className,
+}: {
+  daysToDeadline: number
+  className?: string
+}) {
+  const days = Math.max(0, -daysToDeadline)
+  const reason =
+    days > 0 ? `${days} day${days === 1 ? "" : "s"} overdue` : "Past due date"
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-900/30 dark:text-red-400",
+            className
+          )}
+          aria-label={`Overdue. ${reason}`}
+        >
+          <AlertOctagon className="size-3.5" aria-hidden />
+          <span>Overdue</span>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="top">{reason}</TooltipContent>
+    </Tooltip>
+  )
+}
+
 export function HealthDot({
   health,
   className,

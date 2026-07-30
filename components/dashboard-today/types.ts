@@ -42,4 +42,5 @@ export interface NextUpItem {
   title: string
   contextLine: string
   due: string
+  priority: TodayPriority
 }

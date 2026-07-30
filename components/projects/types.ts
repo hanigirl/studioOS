@@ -44,6 +44,7 @@ export interface PulseProject {
   subtitle: string
   client: string
   clientLogo: string
+  figmaLink: string
   status: ProjectStatus
   team: TeamMember[]
   due: string
