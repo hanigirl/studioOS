@@ -1,7 +1,8 @@
-import { Plus, SlidersHorizontal } from "lucide-react"
+import { SlidersHorizontal } from "lucide-react"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Button } from "@/components/ui/button"
 import { AllProjectsTable } from "@/components/projects/all-projects-table"
+import { NewProjectDialog } from "@/components/projects/new-project-dialog"
 import { OverviewStats } from "@/components/projects/overview-stats"
 import { danielProjects, overflowExtras } from "@/components/projects/data"
 
@@ -23,10 +24,7 @@ export default function ProjectsPage() {
               <SlidersHorizontal />
               Filter
             </Button>
-            <Button size="sm">
-              <Plus />
-              New Project
-            </Button>
+            <NewProjectDialog />
           </div>
         </div>
 
