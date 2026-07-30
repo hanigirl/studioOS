@@ -125,6 +125,10 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
               {filtered.map((p, i) => {
                 const health = computeHealth(p)
                 const isOverdue = p.overdue || p.daysToDeadline < 0
+                const pct =
+                  p.tasksTotal === 0
+                    ? 0
+                    : Math.round((p.tasksDone / p.tasksTotal) * 100)
                 return (
                   <tr
                     key={p.id}
@@ -188,8 +192,26 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                         {p.due}
                       </span>
                     </td>
-                    <td className="px-3 py-4 text-sm text-muted-foreground tabular-nums">
-                      {p.tasksDone}/{p.tasksTotal}
+                    <td className="px-3 py-4">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-1.5 w-24 overflow-hidden rounded-full bg-muted"
+                          dir="ltr"
+                          role="progressbar"
+                          aria-valuenow={pct}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-label={`${p.tasksDone} of ${p.tasksTotal} tasks done (${pct}%)`}
+                        >
+                          <div
+                            className="h-full rounded-full bg-primary transition-[width] duration-500"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs tabular-nums text-muted-foreground">
+                          {p.tasksDone}/{p.tasksTotal}
+                        </span>
+                      </div>
                     </td>
                   </tr>
                 )
