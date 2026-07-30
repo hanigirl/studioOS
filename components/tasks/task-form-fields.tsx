@@ -49,7 +49,11 @@ export function TaskFormFields() {
       <div className="grid grid-cols-2 gap-4">
         <div className="grid gap-2">
           <Label htmlFor="task-status">Status</Label>
-          <Select value={status} onValueChange={(v) => setStatus(v as TaskStatus)}>
+          <Select
+            name="status"
+            value={status}
+            onValueChange={(v) => setStatus(v as TaskStatus)}
+          >
             <SelectTrigger id="task-status" className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -64,7 +68,11 @@ export function TaskFormFields() {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="task-priority">Priority</Label>
-          <Select value={priority} onValueChange={(v) => setPriority(v as TaskPriority)}>
+          <Select
+            name="priority"
+            value={priority}
+            onValueChange={(v) => setPriority(v as TaskPriority)}
+          >
             <SelectTrigger id="task-priority" className="w-full">
               <SelectValue />
             </SelectTrigger>
@@ -86,7 +94,7 @@ export function TaskFormFields() {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="task-assignee">Assignee</Label>
-          <Select value={assignee} onValueChange={setAssignee}>
+          <Select name="assignee" value={assignee} onValueChange={setAssignee}>
             <SelectTrigger id="task-assignee" className="w-full">
               <SelectValue />
             </SelectTrigger>

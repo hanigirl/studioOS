@@ -76,7 +76,7 @@ export const taskStatuses: TaskStatus[] = columns.map((c) => c.id)
 export const taskPriorities: TaskPriority[] = ["High", "Medium", "Low"]
 export const kanbanAssignees: KanbanAssignee[] = [HANI, MAYA, JON, ADA]
 
-const initialTasks: KanbanTask[] = [
+export const initialTasks: KanbanTask[] = [
   { id: "t1", title: "Explore onboarding flow variants", project: "App Redesign", client: "Wix", status: "Backlog", priority: "Medium", due: "Apr 20", assignee: HANI },
   { id: "t2", title: "Collect references for pricing page", project: "Landing Page", client: "Zoom", status: "Backlog", priority: "Low", due: "Apr 25", assignee: MAYA },
   { id: "t3", title: "Wireframe dashboard widgets", project: "Dashboard UI", client: "Slack", status: "To Do", priority: "High", due: "Apr 8", assignee: HANI },
@@ -184,19 +184,39 @@ function KanbanColumn({
   )
 }
 
-export function KanbanBoard() {
-  const [tasks, setTasks] = useState<KanbanTask[]>(initialTasks)
+export function KanbanBoard({
+  tasks,
+  onTasksChange,
+  filterAssignees,
+  filterPriorities,
+}: {
+  tasks: KanbanTask[]
+  onTasksChange: (updater: (prev: KanbanTask[]) => KanbanTask[]) => void
+  filterAssignees: Set<string>
+  filterPriorities: Set<TaskPriority>
+}) {
   const [activeId, setActiveId] = useState<string | null>(null)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
+  const visibleTasks = useMemo(() => {
+    if (!filterAssignees.size && !filterPriorities.size) return tasks
+    return tasks.filter((t) => {
+      if (filterAssignees.size && !filterAssignees.has(t.assignee.name))
+        return false
+      if (filterPriorities.size && !filterPriorities.has(t.priority))
+        return false
+      return true
+    })
+  }, [tasks, filterAssignees, filterPriorities])
+
   const grouped = useMemo(() => {
     const map = new Map<TaskStatus, KanbanTask[]>()
     for (const c of columns) map.set(c.id, [])
-    for (const t of tasks) map.get(t.status)?.push(t)
+    for (const t of visibleTasks) map.get(t.status)?.push(t)
     return map
-  }, [tasks])
+  }, [visibleTasks])
 
   const activeTask = activeId ? tasks.find((t) => t.id === activeId) : undefined
 
@@ -209,7 +229,7 @@ export function KanbanBoard() {
     setActiveId(null)
     if (!over) return
     const newStatus = over.id as TaskStatus
-    setTasks((prev) =>
+    onTasksChange((prev) =>
       prev.map((t) => (t.id === active.id ? { ...t, status: newStatus } : t))
     )
   }

@@ -1,20 +1,43 @@
 "use client"
 
-import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { SlidersHorizontal } from "lucide-react"
+import {
+  kanbanAssignees,
+  taskPriorities,
+  type KanbanTask,
+  type TaskPriority,
+} from "@/components/kanban-board"
 import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { NewTaskTrigger } from "./new-task-trigger"
 
-const versions = [
-  { value: "modal" as const, label: "Modal" },
-  { value: "panel" as const, label: "Side panel" },
-]
-
-export function TasksPageHeader() {
+export function TasksPageHeader({
+  onCreateTask,
+  filterAssignees,
+  onToggleAssignee,
+  filterPriorities,
+  onTogglePriority,
+  onClearFilters,
+}: {
+  onCreateTask: (task: KanbanTask) => void
+  filterAssignees: Set<string>
+  onToggleAssignee: (name: string) => void
+  filterPriorities: Set<TaskPriority>
+  onTogglePriority: (priority: TaskPriority) => void
+  onClearFilters: () => void
+}) {
   const searchParams = useSearchParams()
-  const version = searchParams.get("version") === "panel" ? "panel" : "modal"
+  const version = searchParams.get("version") === "2" ? "panel" : "modal"
+  const activeFilterCount = filterAssignees.size + filterPriorities.size
 
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -26,30 +49,59 @@ export function TasksPageHeader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        {/* New Task version switcher — /tasks?version=modal vs /tasks?version=panel */}
-        <div className="flex items-center gap-0.5 rounded-md border p-0.5" role="group" aria-label="New Task surface">
-          {versions.map((v) => (
-            <Link
-              key={v.value}
-              href={`/tasks?version=${v.value}`}
-              aria-current={version === v.value ? "true" : undefined}
-              className={cn(
-                "rounded-sm px-2.5 py-1 text-xs font-medium transition-colors",
-                version === v.value
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={activeFilterCount ? "secondary" : "outline"}
+              size="sm"
+              aria-label="Filter tasks"
             >
-              {v.label}
-            </Link>
-          ))}
-        </div>
-
-        <Button variant="outline" size="sm">
-          <SlidersHorizontal />
-          Filter
-        </Button>
-        <NewTaskTrigger variant={version} />
+              <SlidersHorizontal />
+              Filter
+              {activeFilterCount > 0 && (
+                <span className="ml-0.5 inline-flex size-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
+                  {activeFilterCount}
+                </span>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Assignee</DropdownMenuLabel>
+            {kanbanAssignees.map((a) => (
+              <DropdownMenuCheckboxItem
+                key={a.name}
+                checked={filterAssignees.has(a.name)}
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={() => onToggleAssignee(a.name)}
+              >
+                {a.name}
+              </DropdownMenuCheckboxItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel>Priority</DropdownMenuLabel>
+            {taskPriorities.map((p) => (
+              <DropdownMenuCheckboxItem
+                key={p}
+                checked={filterPriorities.has(p)}
+                onSelect={(e) => e.preventDefault()}
+                onCheckedChange={() => onTogglePriority(p)}
+              >
+                {p}
+              </DropdownMenuCheckboxItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              disabled={activeFilterCount === 0}
+              onSelect={(e) => {
+                e.preventDefault()
+                onClearFilters()
+              }}
+            >
+              Clear filters
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <NewTaskTrigger variant={version} onCreateTask={onCreateTask} />
       </div>
     </div>
   )
