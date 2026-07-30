@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { Archive, Figma, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -14,10 +15,22 @@ import {
   AvatarImage,
   AvatarGroup,
 } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
+
+// The studio's Figma file. Individual projects can override via `figmaUrl`.
+const FIGMA_FILE =
+  "https://www.figma.com/design/NZfLoBzElVM6Objo0CxIh4/Studio-OS--Community-"
 
 const statusStyles: Record<ProjectStatus, string> = {
   Discovery:
@@ -119,6 +132,10 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                 <th className="px-3 py-3 text-left font-medium">Team</th>
                 <th className="px-3 py-3 text-left font-medium">Due Date</th>
                 <th className="px-3 py-3 text-left font-medium">Tasks</th>
+                <th className="px-3 py-3 text-left font-medium">Figma</th>
+                <th className="px-3 py-3 text-right font-medium">
+                  <span className="sr-only">Actions</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -190,6 +207,46 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                     </td>
                     <td className="px-3 py-4 text-sm text-muted-foreground tabular-nums">
                       {p.tasksDone}/{p.tasksTotal}
+                    </td>
+                    <td className="px-3 py-4">
+                      <a
+                        href={p.figmaUrl ?? FIGMA_FILE}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Open ${p.name} in Figma`}
+                        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        <Figma className="size-4" aria-hidden />
+                        <span>Open</span>
+                      </a>
+                    </td>
+                    <td className="px-3 py-4 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Actions for ${p.name}`}
+                          >
+                            <MoreHorizontal />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <Pencil />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Archive />
+                            Archive
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem variant="destructive">
+                            <Trash2 />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                   </tr>
                 )
