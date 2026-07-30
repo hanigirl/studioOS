@@ -210,7 +210,7 @@ export function ProjectPulseCard({ project }: { project: PulseProject }) {
  * "Visual hole != signal" (2026-05-05) and
  * "Info Hierarchy בשורות task — context-aware".
  */
-function PulseTaskRow({ task }: { task: NextTask }) {
+export function PulseTaskRow({ task }: { task: NextTask }) {
   const isUnassigned = isUnassignedTask(task)
   const isOwn = !isUnassigned && task.assignee?.name === "Daniel"
 

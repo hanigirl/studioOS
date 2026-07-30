@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type KeyboardEvent } from "react"
+import { useRouter } from "next/navigation"
 import {
   Card,
   CardContent,
@@ -16,6 +17,7 @@ import {
 } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
+import { EmptyState } from "./empty-state"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
 
@@ -53,7 +55,12 @@ type TabValue = (typeof tabs)[number]["value"]
  * Rationale lives in `.claude/agents/shared/lessons.md` —
  * "IA: ישות אחת = surface אחד" (2026-05-05).
  */
+// Only "App Redesign" links to a real single-project page for now — the
+// other rows will get the same treatment once their pages exist.
+const LINKED_PROJECT_ID = "wix-app-redesign"
+
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
+  const router = useRouter()
   const [active, setActive] = useState<TabValue>("all")
 
   const filtered =
@@ -109,94 +116,117 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-3 text-left font-medium">Project</th>
-                <th className="px-3 py-3 text-left font-medium">Client</th>
-                <th className="px-3 py-3 text-left font-medium">Status</th>
-                <th className="px-3 py-3 text-left font-medium">Team</th>
-                <th className="px-3 py-3 text-left font-medium">Due Date</th>
-                <th className="px-3 py-3 text-left font-medium">Tasks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((p, i) => {
-                const health = computeHealth(p)
-                const isOverdue = p.overdue || p.daysToDeadline < 0
-                return (
-                  <tr
-                    key={p.id}
-                    className={cn(
-                      "group hover:bg-muted/40 transition-colors",
-                      i < filtered.length - 1 && "border-b border-border"
-                    )}
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col">
-                        <span className="font-semibold leading-tight">
-                          {p.name}
-                        </span>
-                        <span className="text-xs text-muted-foreground mt-0.5">
-                          {p.subtitle}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <div className="flex items-center gap-2">
-                        <Avatar size="sm">
-                          <AvatarImage src={p.clientLogo} alt={p.client} />
-                          <AvatarFallback>{p.client[0]}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{p.client}</span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <div className="inline-flex items-center gap-2">
-                        <HealthDot health={health} />
+        {filtered.length === 0 ? (
+          <EmptyState
+            status={active === "all" ? "matching" : active}
+            onClear={active === "all" ? undefined : () => setActive("all")}
+          />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <th className="px-6 py-3 text-left font-medium">Project</th>
+                  <th className="px-3 py-3 text-left font-medium">Client</th>
+                  <th className="px-3 py-3 text-left font-medium">Status</th>
+                  <th className="px-3 py-3 text-left font-medium">Team</th>
+                  <th className="px-3 py-3 text-left font-medium">Due Date</th>
+                  <th className="px-3 py-3 text-left font-medium">Tasks</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((p, i) => {
+                  const health = computeHealth(p)
+                  const isOverdue = p.overdue || p.daysToDeadline < 0
+                  const isLinked = p.id === LINKED_PROJECT_ID
+                  return (
+                    <tr
+                      key={p.id}
+                      className={cn(
+                        "group hover:bg-muted/40 transition-colors",
+                        i < filtered.length - 1 && "border-b border-border",
+                        isLinked && "cursor-pointer"
+                      )}
+                      {...(isLinked
+                        ? {
+                            role: "link",
+                            tabIndex: 0,
+                            "aria-label": `Open ${p.name}`,
+                            onClick: () => router.push(`/projects/${p.id}`),
+                            onKeyDown: (e: KeyboardEvent) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault()
+                                router.push(`/projects/${p.id}`)
+                              }
+                            },
+                          }
+                        : {})}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-semibold leading-tight">
+                            {p.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground mt-0.5">
+                            {p.subtitle}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="flex items-center gap-2">
+                          <Avatar size="sm">
+                            <AvatarImage src={p.clientLogo} alt={p.client} />
+                            <AvatarFallback>{p.client[0]}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">{p.client}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="inline-flex items-center gap-2">
+                          <HealthDot health={health} />
+                          <span
+                            className={cn(
+                              "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
+                              statusStyles[p.status]
+                            )}
+                          >
+                            {p.status}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <AvatarGroup>
+                          {p.team.map((m) => (
+                            <Avatar key={m.name} size="sm">
+                              <AvatarFallback
+                                className={cn("text-white", m.color)}
+                              >
+                                {m.initials}
+                              </AvatarFallback>
+                            </Avatar>
+                          ))}
+                        </AvatarGroup>
+                      </td>
+                      <td className="px-3 py-4">
                         <span
                           className={cn(
-                            "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
-                            statusStyles[p.status]
+                            "text-sm font-medium tabular-nums",
+                            isOverdue && "text-destructive"
                           )}
                         >
-                          {p.status}
+                          {p.due}
                         </span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-4">
-                      <AvatarGroup>
-                        {p.team.map((m) => (
-                          <Avatar key={m.name} size="sm">
-                            <AvatarFallback
-                              className={cn("text-white", m.color)}
-                            >
-                              {m.initials}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
-                      </AvatarGroup>
-                    </td>
-                    <td className="px-3 py-4">
-                      <span
-                        className={cn(
-                          "text-sm font-medium tabular-nums",
-                          isOverdue && "text-destructive"
-                        )}
-                      >
-                        {p.due}
-                      </span>
-                    </td>
-                    <td className="px-3 py-4 text-sm text-muted-foreground tabular-nums">
-                      {p.tasksDone}/{p.tasksTotal}
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+                      </td>
+                      <td className="px-3 py-4 text-sm text-muted-foreground tabular-nums">
+                        {p.tasksDone}/{p.tasksTotal}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
