@@ -1,6 +1,6 @@
 "use client"
 
-import { Archive, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { Archive, Figma, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import {
   Avatar,
   AvatarFallback,
@@ -32,9 +32,15 @@ const statusStyles: Record<ProjectStatus, string> = {
   Done: "bg-muted text-muted-foreground",
 }
 
+// The studio's Figma file. Individual projects can override via `figmaUrl`.
+const FIGMA_FILE =
+  "https://www.figma.com/design/NZfLoBzElVM6Objo0CxIh4/Studio-OS--Community-"
+
 export function ProjectRow({ project: p }: { project: PulseProject }) {
   const health = computeHealth(p)
   const isOverdue = p.overdue || p.daysToDeadline < 0
+  const pct =
+    p.tasksTotal === 0 ? 0 : Math.round((p.tasksDone / p.tasksTotal) * 100)
 
   return (
     <div className="flex flex-wrap items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:bg-muted/40">
@@ -89,10 +95,38 @@ export function ProjectRow({ project: p }: { project: PulseProject }) {
         {p.due}
       </span>
 
-      {/* Tasks */}
-      <span className="w-14 shrink-0 text-sm text-muted-foreground tabular-nums">
-        {p.tasksDone}/{p.tasksTotal}
-      </span>
+      {/* Tasks — progress bar + count (matches the table view) */}
+      <div className="flex w-40 shrink-0 items-center gap-2">
+        <div
+          className="h-1.5 w-20 overflow-hidden rounded-full bg-muted"
+          dir="ltr"
+          role="progressbar"
+          aria-valuenow={pct}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`${p.tasksDone} of ${p.tasksTotal} tasks done (${pct}%)`}
+        >
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <span className="text-xs tabular-nums text-muted-foreground">
+          {p.tasksDone}/{p.tasksTotal}
+        </span>
+      </div>
+
+      {/* Figma link */}
+      <a
+        href={p.figmaUrl ?? FIGMA_FILE}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Open ${p.name} in Figma`}
+        className="inline-flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <Figma className="size-4" aria-hidden />
+        <span>Open</span>
+      </a>
 
       {/* Actions */}
       <DropdownMenu>
