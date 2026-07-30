@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -41,6 +42,64 @@ const tabs = [
 
 type TabValue = (typeof tabs)[number]["value"]
 
+type SortKey = "name" | "status" | "date"
+type SortDir = "asc" | "desc"
+
+// Status pipeline order for sorting (independent of the coloured pills above).
+const statusOrder: Record<ProjectStatus, number> = {
+  Discovery: 0,
+  Design: 1,
+  Review: 2,
+  Handoff: 3,
+  Done: 4,
+}
+
+// Turn a "MMM D" due string (e.g. "Apr 12") into a comparable number so the
+// Due Date column sorts by the actual displayed date.
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+]
+function dueValue(due: string): number {
+  const [mon, day] = due.split(" ")
+  return MONTHS.indexOf(mon) * 100 + (parseInt(day, 10) || 0)
+}
+
+function SortHeader({
+  label,
+  active,
+  dir = "asc",
+  onClick,
+  className,
+}: {
+  label: string
+  active: boolean
+  dir?: SortDir
+  onClick: () => void
+  className?: string
+}) {
+  const Icon = !active ? ChevronsUpDown : dir === "asc" ? ArrowUp : ArrowDown
+  return (
+    <th className={cn("py-3 font-medium", className)}>
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={`Sort by ${label}`}
+        className={cn(
+          "inline-flex items-center gap-1 uppercase tracking-wider transition-colors hover:text-foreground",
+          active && "text-foreground"
+        )}
+      >
+        {label}
+        <Icon
+          className={cn("size-3", !active && "opacity-40")}
+          aria-hidden
+        />
+      </button>
+    </th>
+  )
+}
+
 /**
  * The management view of the Project entity inside `/projects`. Reads the
  * canonical `PulseProject[]` so this table and `<PulseSection>` above it can
@@ -55,11 +114,35 @@ type TabValue = (typeof tabs)[number]["value"]
  */
 export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
   const [active, setActive] = useState<TabValue>("all")
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir } | null>(null)
 
   const filtered =
     active === "all"
       ? projects
       : projects.filter((p) => p.status === active)
+
+  const comparators: Record<
+    SortKey,
+    (a: PulseProject, b: PulseProject) => number
+  > = {
+    name: (a, b) => a.name.localeCompare(b.name),
+    status: (a, b) => statusOrder[a.status] - statusOrder[b.status],
+    date: (a, b) => dueValue(a.due) - dueValue(b.due),
+  }
+
+  const sorted = sort
+    ? [...filtered].sort(
+        (a, b) => comparators[sort.key](a, b) * (sort.dir === "asc" ? 1 : -1)
+      )
+    : filtered
+
+  function toggleSort(key: SortKey) {
+    setSort((prev) =>
+      prev && prev.key === key
+        ? { key, dir: prev.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" }
+    )
+  }
 
   const countFor = (v: TabValue) =>
     v === "all"
@@ -113,16 +196,34 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-y border-border text-[11px] uppercase tracking-wider text-muted-foreground">
-                <th className="px-6 py-3 text-left font-medium">Project</th>
+                <SortHeader
+                  label="Project"
+                  active={sort?.key === "name"}
+                  dir={sort?.dir}
+                  onClick={() => toggleSort("name")}
+                  className="px-6 text-left"
+                />
                 <th className="px-3 py-3 text-left font-medium">Client</th>
-                <th className="px-3 py-3 text-left font-medium">Status</th>
+                <SortHeader
+                  label="Status"
+                  active={sort?.key === "status"}
+                  dir={sort?.dir}
+                  onClick={() => toggleSort("status")}
+                  className="px-3 text-left"
+                />
                 <th className="px-3 py-3 text-left font-medium">Team</th>
-                <th className="px-3 py-3 text-left font-medium">Due Date</th>
+                <SortHeader
+                  label="Due Date"
+                  active={sort?.key === "date"}
+                  dir={sort?.dir}
+                  onClick={() => toggleSort("date")}
+                  className="px-3 text-left"
+                />
                 <th className="px-3 py-3 text-left font-medium">Tasks</th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((p, i) => {
+              {sorted.map((p, i) => {
                 const health = computeHealth(p)
                 const isOverdue = p.overdue || p.daysToDeadline < 0
                 return (
@@ -130,7 +231,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                     key={p.id}
                     className={cn(
                       "group hover:bg-muted/40 transition-colors",
-                      i < filtered.length - 1 && "border-b border-border"
+                      i < sorted.length - 1 && "border-b border-border"
                     )}
                   >
                     <td className="px-6 py-4">
