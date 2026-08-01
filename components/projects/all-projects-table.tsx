@@ -9,7 +9,7 @@ import {
   Figma,
   FilterX,
   FolderOpen,
-  LayoutList,
+  LayoutGrid,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -43,8 +43,11 @@ import {
 import { cn } from "@/lib/utils"
 import { computeHealth } from "./data"
 import { EmptyState } from "./empty-state"
-import { ProjectRow } from "./project-row"
+import { ProjectPulseCard } from "./project-pulse-card"
 import { HealthDot } from "./health-badge"
+import { DeleteProjectModal } from "./delete-project-modal"
+import { ArchiveProjectModal } from "./archive-project-modal"
+import { EditProjectModal } from "./edit-project-modal"
 import type { ProjectStatus, PulseProject } from "./types"
 
 const statusStyles: Record<ProjectStatus, string> = {
@@ -136,11 +139,62 @@ function SortHeader({
  * view toggle, and per-row actions. Empty states cover both "no projects at
  * all" and "no results for the current filter/search".
  */
-export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
+export function AllProjectsTable({
+  projects: initialProjects,
+}: {
+  projects: PulseProject[]
+}) {
+  const [projects, setProjects] = useState(initialProjects)
   const [active, setActive] = useState<TabValue>("all")
   const [view, setView] = useState<ViewMode>("table")
   const [query, setQuery] = useState("")
   const [sort, setSort] = useState<{ key: SortKey; dir: SortDir } | null>(null)
+
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean
+    project: PulseProject | null
+  }>({ open: false, project: null })
+
+  const [archiveModal, setArchiveModal] = useState<{
+    open: boolean
+    project: PulseProject | null
+  }>({ open: false, project: null })
+
+  const [editModal, setEditModal] = useState<{
+    open: boolean
+    project: PulseProject | null
+  }>({ open: false, project: null })
+
+  function handleEdit(project: PulseProject) {
+    setEditModal({ open: true, project })
+  }
+
+  function handleArchive(project: PulseProject) {
+    setArchiveModal({ open: true, project })
+  }
+
+  function handleDelete(project: PulseProject) {
+    setDeleteModal({ open: true, project })
+  }
+
+  function handleDeleteConfirm(projectId: string) {
+    setProjects((prev) => prev.filter((p) => p.id !== projectId))
+  }
+
+  function handleArchiveConfirm(projectId: string) {
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, isArchived: true } : p))
+    )
+  }
+
+  function handleEditConfirm(
+    projectId: string,
+    updates: Partial<PulseProject>
+  ) {
+    setProjects((prev) =>
+      prev.map((p) => (p.id === projectId ? { ...p, ...updates } : p))
+    )
+  }
 
   const q = query.trim().toLowerCase()
   const matchesQuery = (p: PulseProject) =>
@@ -149,7 +203,10 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
     p.client.toLowerCase().includes(q)
 
   const filtered = projects.filter(
-    (p) => (active === "all" || p.status === active) && matchesQuery(p)
+    (p) =>
+      !p.isArchived &&
+      (active === "all" || p.status === active) &&
+      matchesQuery(p)
   )
 
   const comparators: Record<
@@ -208,7 +265,7 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
 
   const viewOptions = [
     { value: "table", label: "Table view", icon: Table2 },
-    { value: "cards", label: "Card view", icon: LayoutList },
+    { value: "cards", label: "Card view", icon: LayoutGrid },
   ] as const
 
   return (
@@ -311,9 +368,9 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
             }
           />
         ) : view === "cards" ? (
-          <div className="flex flex-col gap-3 px-6">
+          <div className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-2 xl:grid-cols-3">
             {sorted.map((p) => (
-              <ProjectRow key={p.id} project={p} />
+              <ProjectPulseCard key={p.id} project={p} />
             ))}
           </div>
         ) : (
@@ -467,16 +524,21 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleEdit(p)}>
                               <Pencil />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleArchive(p)}
+                            >
                               <Archive />
                               Archive
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem variant="destructive">
+                            <DropdownMenuItem
+                              variant="destructive"
+                              onClick={() => handleDelete(p)}
+                            >
                               <Trash2 />
                               Delete
                             </DropdownMenuItem>
@@ -491,6 +553,34 @@ export function AllProjectsTable({ projects }: { projects: PulseProject[] }) {
           </div>
         )}
       </CardContent>
+
+      {/* Modals */}
+      <DeleteProjectModal
+        open={deleteModal.open}
+        onOpenChange={(open) =>
+          setDeleteModal((prev) => ({ ...prev, open }))
+        }
+        project={deleteModal.project}
+        onConfirm={handleDeleteConfirm}
+      />
+
+      <ArchiveProjectModal
+        open={archiveModal.open}
+        onOpenChange={(open) =>
+          setArchiveModal((prev) => ({ ...prev, open }))
+        }
+        project={archiveModal.project}
+        onConfirm={handleArchiveConfirm}
+      />
+
+      <EditProjectModal
+        open={editModal.open}
+        onOpenChange={(open) =>
+          setEditModal((prev) => ({ ...prev, open }))
+        }
+        project={editModal.project}
+        onConfirm={handleEditConfirm}
+      />
     </Card>
   )
 }

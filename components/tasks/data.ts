@@ -5,6 +5,9 @@ const MAYA: TeamMember = { name: "Maya", initials: "M", color: "bg-pink-500" }
 const JON: TeamMember = { name: "Jon", initials: "J", color: "bg-emerald-500" }
 const ADA: TeamMember = { name: "Ada", initials: "A", color: "bg-violet-500" }
 
+/** Assignable team members, shared by the task cards and the New Task form. */
+export const assignees: TeamMember[] = [HANI, MAYA, JON, ADA]
+
 /**
  * Priority pill palette. Kept identical to the one in
  * `components/projects/project-pulse-card.tsx` so a task reads the same
@@ -19,12 +22,12 @@ export const priorityStyles: Record<TaskPriority, string> = {
 /** Column order + status-dot colour. Mirrors the 7-column Figma board. */
 export const columns: KanbanColumnDef[] = [
   { status: "Backlog", dotClass: "bg-slate-400" },
-  { status: "To Do", dotClass: "bg-slate-600" },
+  { status: "To Do", dotClass: "bg-zinc-500" },
   { status: "In Progress", dotClass: "bg-blue-500" },
   { status: "In Review", dotClass: "bg-orange-500" },
-  { status: "Approved", dotClass: "bg-emerald-500" },
-  { status: "In Dev", dotClass: "bg-violet-500" },
-  { status: "Done", dotClass: "bg-green-600" },
+  { status: "Approved", dotClass: "bg-purple-500" },
+  { status: "In Dev", dotClass: "bg-teal-500" },
+  { status: "Done", dotClass: "bg-emerald-500" },
 ]
 
 export const tasks: Task[] = [
@@ -39,13 +42,13 @@ export const tasks: Task[] = [
   { id: "t6", title: "Redesign profile settings screen", project: "App Redesign", client: "Wix", status: "In Progress", priority: "High", due: "Apr 10", assignee: HANI },
   { id: "t7", title: "Build email header templates", project: "Marketing Kit", client: "Fiverr", status: "In Progress", priority: "Medium", due: "Apr 15", assignee: MAYA },
   // In Review
-  { id: "t8", title: "Final logo presentation", project: "Brand Identity", client: "Monday", status: "In Review", priority: "High", due: "Apr 5", assignee: HANI },
+  { id: "t8", title: "Final logo presentation", project: "Brand Identity", client: "Monday", status: "In Review", priority: "High", due: "Apr 5", assignee: ADA },
   { id: "t9", title: "Analytics chart components", project: "Dashboard UI", client: "Slack", status: "In Review", priority: "Medium", due: "Apr 7", assignee: HANI },
   // Approved
   { id: "t10", title: "Checkout flow hand-off pack", project: "App Redesign", client: "Wix", status: "Approved", priority: "High", due: "Apr 9", assignee: HANI },
   // In Dev
   { id: "t11", title: "Navigation shell components", project: "Dashboard UI", client: "Slack", status: "In Dev", priority: "Medium", due: "Apr 4", assignee: JON },
   // Done
-  { id: "t12", title: "Color tokens audit", project: "Brand Identity", client: "Monday", status: "Done", priority: "Low", due: "Mar 28", assignee: ADA },
   { id: "t13", title: "Icon set v2", project: "Marketing Kit", client: "Fiverr", status: "Done", priority: "Low", due: "Mar 30", assignee: MAYA },
+  { id: "t12", title: "Color tokens audit", project: "Brand Identity", client: "Monday", status: "Done", priority: "Low", due: "Mar 28", assignee: ADA },
 ]

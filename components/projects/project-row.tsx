@@ -36,7 +36,19 @@ const statusStyles: Record<ProjectStatus, string> = {
 const FIGMA_FILE =
   "https://www.figma.com/design/NZfLoBzElVM6Objo0CxIh4/Studio-OS--Community-"
 
-export function ProjectRow({ project: p }: { project: PulseProject }) {
+interface ProjectRowProps {
+  project: PulseProject
+  onEditClick?: (project: PulseProject) => void
+  onArchiveClick?: (project: PulseProject) => void
+  onDeleteClick?: (project: PulseProject) => void
+}
+
+export function ProjectRow({
+  project: p,
+  onEditClick,
+  onArchiveClick,
+  onDeleteClick,
+}: ProjectRowProps) {
   const health = computeHealth(p)
   const isOverdue = p.overdue || p.daysToDeadline < 0
   const pct =
@@ -141,16 +153,19 @@ export function ProjectRow({ project: p }: { project: PulseProject }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onEditClick?.(p)}>
             <Pencil />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onArchiveClick?.(p)}>
             <Archive />
             Archive
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem
+            variant="destructive"
+            onClick={() => onDeleteClick?.(p)}
+          >
             <Trash2 />
             Delete
           </DropdownMenuItem>

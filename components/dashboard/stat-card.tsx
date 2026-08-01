@@ -26,7 +26,7 @@ export function StatCard({
 
         <p className="text-3xl font-semibold tracking-tight">{value}</p>
 
-        <div className="flex items-center gap-1.5 text-sm font-medium">
+        <div className="flex items-center gap-1.5 text-sm">
           <span>{trendText}</span>
           <TrendIcon className="size-4" aria-hidden />
         </div>

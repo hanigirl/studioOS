@@ -30,7 +30,7 @@ export function SettingsContent() {
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
       <nav
         aria-label="Settings sections"
-        className="flex shrink-0 gap-1 overflow-x-auto lg:w-48 lg:flex-col lg:overflow-visible"
+        className="flex shrink-0 gap-1 overflow-x-auto lg:w-48 lg:flex-col lg:overflow-visible lg:sticky lg:top-6 lg:self-start"
       >
         {nav.map(({ id, label, icon: Icon }) => (
           <button
