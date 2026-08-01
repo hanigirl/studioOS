@@ -17,8 +17,13 @@ import { KanbanColumn } from "./kanban-column"
 import { TaskCard } from "./task-card"
 import type { Task, TaskStatus } from "./types"
 
-export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+export function KanbanBoard({
+  tasks,
+  onTasksChange,
+}: {
+  tasks: Task[]
+  onTasksChange: (tasks: Task[]) => void
+}) {
   const [activeId, setActiveId] = useState<string | null>(null)
 
   const sensors = useSensors(
@@ -39,8 +44,8 @@ export function KanbanBoard({ initialTasks }: { initialTasks: Task[] }) {
 
     // Droppable ids are the column statuses.
     const newStatus = over.id as TaskStatus
-    setTasks((prev) =>
-      prev.map((t) =>
+    onTasksChange(
+      tasks.map((t) =>
         t.id === active.id && t.status !== newStatus
           ? { ...t, status: newStatus }
           : t

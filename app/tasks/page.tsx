@@ -1,9 +1,16 @@
-import { Filter, Plus } from "lucide-react"
+"use client"
+
+import { useState } from "react"
+import { Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { KanbanBoard } from "@/components/tasks/kanban-board"
-import { tasks } from "@/components/tasks/data"
+import { NewTaskDialog } from "@/components/tasks/new-task-dialog"
+import { tasks as initialTasks } from "@/components/tasks/data"
+import type { Task } from "@/components/tasks/types"
 
 export default function TasksPage() {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks)
+
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -17,13 +24,11 @@ export default function TasksPage() {
           <Button variant="outline" size="sm">
             <Filter /> Filter
           </Button>
-          <Button size="sm">
-            <Plus /> New Task
-          </Button>
+          <NewTaskDialog onCreate={(task) => setTasks((prev) => [...prev, task])} />
         </div>
       </div>
 
-      <KanbanBoard initialTasks={tasks} />
+      <KanbanBoard tasks={tasks} onTasksChange={setTasks} />
     </div>
   )
 }

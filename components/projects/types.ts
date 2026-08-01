@@ -55,4 +55,6 @@ export interface PulseProject {
   healthReason: string
   /** Link to the project's Figma design file. */
   figmaUrl?: string
+  /** Whether the project is archived and hidden from active view. */
+  isArchived?: boolean
 }
