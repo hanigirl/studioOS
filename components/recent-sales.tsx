@@ -1,5 +1,11 @@
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import fiverrLogo from "@/public/logos/fiverr.png"
+import metaLogo from "@/public/logos/meta.png"
+import mondayLogo from "@/public/logos/monday.png"
+import slackLogo from "@/public/logos/slack.png"
+import wixLogo from "@/public/logos/wix.png"
+import zoomLogo from "@/public/logos/zoom.png"
 import {
   Card,
   CardContent,
@@ -15,42 +21,42 @@ const projects = [
   {
     name: "App Redesign",
     client: "Wix",
-    avatar: "/logos/wix.png",
+    avatar: wixLogo.src,
     status: "In Progress" as const,
     deadline: "Apr 12",
   },
   {
     name: "Brand Identity",
     client: "Monday",
-    avatar: "/logos/monday.png",
+    avatar: mondayLogo.src,
     status: "In Review" as const,
     deadline: "Apr 5",
   },
   {
     name: "Marketing Kit",
     client: "Fiverr",
-    avatar: "/logos/fiverr.png",
+    avatar: fiverrLogo.src,
     status: "In Progress" as const,
     deadline: "Apr 18",
   },
   {
     name: "Dashboard UI",
     client: "Slack",
-    avatar: "/logos/slack.png",
+    avatar: slackLogo.src,
     status: "In Review" as const,
     deadline: "Apr 2",
   },
   {
     name: "Social Templates",
     client: "Meta",
-    avatar: "/logos/meta.png",
+    avatar: metaLogo.src,
     status: "In Progress" as const,
     deadline: "Apr 24",
   },
   {
     name: "Landing Page",
     client: "Zoom",
-    avatar: "/logos/zoom.png",
+    avatar: zoomLogo.src,
     status: "In Progress" as const,
     deadline: "Apr 30",
   },

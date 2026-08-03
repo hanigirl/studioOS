@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 const chartData = [
   { month: "Jan", thisYear: 8200, lastYear: 6100 },
@@ -44,15 +45,15 @@ const chartData = [
 const chartConfig = {
   thisYear: {
     label: "This Year",
-    color: "hsl(217, 91%, 60%)",
+    color: "var(--chart-1)",
   },
   lastYear: {
     label: "Last Year",
-    color: "hsl(213, 97%, 75%)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
-export function IncomeChart() {
+export function IncomeChart({ className }: { className?: string }) {
   const [period, setPeriod] = useState("6")
 
   const filteredData = useMemo(
@@ -61,11 +62,16 @@ export function IncomeChart() {
   )
 
   return (
-    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+    <Card
+      className={cn(
+        "transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md",
+        className
+      )}
+    >
       <CardHeader>
-        <CardTitle>Your Income</CardTitle>
+        <CardTitle>Income</CardTitle>
         <CardDescription>
-          Monthly income — this year vs last year
+          Monthly income comparison — this year vs last year
         </CardDescription>
         <CardAction>
           <Select value={period} onValueChange={setPeriod}>

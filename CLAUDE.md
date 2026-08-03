@@ -224,6 +224,7 @@ When Figma shows a card with header/body/footer, map 1:1 to these sub-parts. Do 
 // components/ui/avatar.tsx
 <AvatarPrimitive.Root
   data-slot="avatar"
+ 
   data-size={size}  // "default" | "sm" | "lg"
   className={cn(
     "group/avatar relative flex size-8 ... data-[size=lg]:size-10 data-[size=sm]:size-6",
