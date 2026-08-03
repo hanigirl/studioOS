@@ -24,9 +24,11 @@ export default function RootLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="h-svh overflow-hidden md:h-[calc(100svh-1rem)]">
             <Header />
-            <div className="flex-1 p-4 md:p-6 max-w-screen-xl mx-auto w-full">{children}</div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 md:p-6 max-w-screen-xl mx-auto w-full">{children}</div>
+            </div>
           </SidebarInset>
         </SidebarProvider>
       </body>

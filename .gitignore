@@ -48,3 +48,6 @@ Untitled
 
 *storybook.log
 storybook-static
+
+# Playwright MCP artifacts
+.playwright-mcp/

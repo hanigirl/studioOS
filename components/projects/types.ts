@@ -53,4 +53,6 @@ export interface PulseProject {
   tasksTotal: number
   nextTasks: NextTask[]
   healthReason: string
+  /** Link to the project's Figma design file. */
+  figmaUrl?: string
 }
