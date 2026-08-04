@@ -1,6 +1,6 @@
-# Meyrav Gutshtein — Design System & Figma MCP Integration Rules
+# Studio OS — Design System & Figma MCP Integration Rules
 
-This document is the authoritative rules doc for working with the Meyrav Gutshtein codebase and integrating Figma designs via the Model Context Protocol. Read this before generating, editing, or translating any UI.
+This document is the authoritative rules doc for working with the Studio OS codebase and integrating Figma designs via the Model Context Protocol. Read this before generating, editing, or translating any UI.
 
 ---
 
@@ -396,7 +396,7 @@ Use Next.js's `Image` component with a static import (preserves dimensions, hash
 import Image from "next/image"
 import logoD from "@/public/assets/Logo-D.png"
 
-<Image src={logoD} alt="Meyrav Gutshtein" className="size-full object-contain" />
+<Image src={logoD} alt="Studio OS" className="size-full object-contain" />
 ```
 
 For raw SVGs already in `public/`, reference by absolute path (`/file.svg`). Because of `basePath: "/studioOS"`, Next.js automatically prefixes these at build — **do not hardcode** `/studioOS/...` in source.
