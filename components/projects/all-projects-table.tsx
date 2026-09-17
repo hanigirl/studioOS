@@ -41,22 +41,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { computeHealth } from "./data"
+import { computeHealth, statusStyles, FIGMA_FILE, dueValue } from "./data"
 import { EmptyState } from "./empty-state"
 import { ProjectRow } from "./project-row"
 import { HealthDot } from "./health-badge"
 import type { ProjectStatus, PulseProject } from "./types"
-
-const statusStyles: Record<ProjectStatus, string> = {
-  Discovery:
-    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  Design: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-  Review:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
-  Handoff:
-    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  Done: "bg-muted text-muted-foreground",
-}
 
 const tabs = [
   { label: "All", value: "all" as const },
@@ -71,10 +60,6 @@ type ViewMode = "table" | "cards"
 type SortKey = "name" | "status" | "date"
 type SortDir = "asc" | "desc"
 
-// The studio's Figma file. Individual projects can override via `figmaUrl`.
-const FIGMA_FILE =
-  "https://www.figma.com/design/NZfLoBzElVM6Objo0CxIh4/Studio-OS--Community-"
-
 // Status pipeline order for sorting (independent of the coloured pills above).
 const statusOrder: Record<ProjectStatus, number> = {
   Discovery: 0,
@@ -82,17 +67,6 @@ const statusOrder: Record<ProjectStatus, number> = {
   Review: 2,
   Handoff: 3,
   Done: 4,
-}
-
-// Turn a "MMM D" due string (e.g. "Apr 12") into a comparable number so the
-// Due Date column sorts by the actual displayed date.
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-]
-function dueValue(due: string): number {
-  const [mon, day] = due.split(" ")
-  return MONTHS.indexOf(mon) * 100 + (parseInt(day, 10) || 0)
 }
 
 function SortHeader({

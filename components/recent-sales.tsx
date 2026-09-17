@@ -18,7 +18,7 @@ const sales = [
 
 export function RecentSales() {
   return (
-    <Card className="transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="h-full transition-[transform,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-md">
       <CardHeader>
         <CardTitle>Recent Sales</CardTitle>
         <CardDescription>You made 265 sales this month.</CardDescription>
@@ -26,7 +26,7 @@ export function RecentSales() {
       <CardContent>
         <div className="space-y-6">
           {sales.map((sale) => (
-            <div key={sale.name} className="flex items-center gap-4">
+            <div key={sale.name} className="flex items-center">
               <Avatar size="lg">
                 <AvatarImage
                   src={sale.logo}
@@ -35,13 +35,11 @@ export function RecentSales() {
                 />
                 <AvatarFallback>{sale.name[0]}</AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0">
+              <div className="ml-4 space-y-1">
                 <p className="text-sm font-semibold leading-none">{sale.name}</p>
-                <p className="text-sm text-muted-foreground mt-1 truncate">
-                  {sale.email}
-                </p>
+                <p className="text-sm text-muted-foreground">{sale.email}</p>
               </div>
-              <span className="shrink-0 text-sm font-semibold">
+              <span className="ml-auto shrink-0 pl-4 text-sm font-semibold">
                 {sale.amount}
               </span>
             </div>

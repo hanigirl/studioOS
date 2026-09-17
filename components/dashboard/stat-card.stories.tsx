@@ -11,19 +11,13 @@ const meta: Meta<typeof StatCard> = {
     docs: {
       description: {
         component:
-          'KPI card used on the Dashboard. Anatomy (top → bottom): label + trend `Badge` (outline pill with trending icon + change), large value (`text-3xl font-semibold`), a trend line (text + trending icon), and a muted caption. Built from the `Card` and `Badge` primitives — see `components/dashboard/stat-card.tsx`.',
+          'KPI card used on the Dashboard. Composed from `Card`\'s sub-parts: `CardHeader` holds a `CardDescription` (label) and `CardTitle` (large value, `text-3xl font-bold`), and `CardFooter` holds the muted caption. See `components/dashboard/stat-card.tsx`.',
       },
     },
   },
   argTypes: {
-    trend: {
-      control: 'inline-radio',
-      options: ['up', 'down'],
-    },
     label: { control: 'text' },
     value: { control: 'text' },
-    change: { control: 'text' },
-    trendText: { control: 'text' },
     caption: { control: 'text' },
   },
 };
@@ -45,22 +39,16 @@ export const Default: Story = {
   args: {
     label: 'Tasks Completed',
     value: '34',
-    change: '+12%',
-    trend: 'up',
-    trendText: 'Trending up this month',
-    caption: '34 tasks completed this week',
+    caption: '+12% from last week',
   },
 };
 
-export const DownTrend: Story = {
+export const NegativeChange: Story = {
   decorators: single,
   args: {
     label: 'To Do',
     value: '12',
-    change: '-3',
-    trend: 'down',
-    trendText: 'Down from last week',
-    caption: '3 fewer than last week',
+    caption: '-3 from last week',
   },
 };
 
