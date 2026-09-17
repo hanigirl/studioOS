@@ -1,4 +1,37 @@
-import type { NextTask, PulseProject, ProjectHealth, TeamMember } from "./types"
+import type {
+  NextTask,
+  ProjectStatus,
+  PulseProject,
+  ProjectHealth,
+  TeamMember,
+} from "./types"
+
+// The studio's Figma file. Individual projects can override via `figmaUrl`.
+export const FIGMA_FILE =
+  "https://www.figma.com/design/NZfLoBzElVM6Objo0CxIh4/Studio-OS--Community-"
+
+export const statusStyles: Record<ProjectStatus, string> = {
+  Discovery:
+    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  Design: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  Review:
+    "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+  Handoff:
+    "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  Done: "bg-muted text-muted-foreground",
+}
+
+// Turns a "MMM D" due string (e.g. "Apr 12") into a comparable number, so
+// anything sorting by due date sorts by what's actually displayed rather
+// than the separately-tracked `daysToDeadline` field.
+const MONTHS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+]
+export function dueValue(due: string): number {
+  const [mon, day] = due.split(" ")
+  return MONTHS.indexOf(mon) * 100 + (parseInt(day, 10) || 0)
+}
 
 const DANIEL = { name: "Daniel", initials: "D", color: "bg-blue-500" }
 const MAYA = { name: "Maya", initials: "M", color: "bg-pink-500" }
