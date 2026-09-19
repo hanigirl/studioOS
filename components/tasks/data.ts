@@ -5,6 +5,8 @@ const MAYA: TeamMember = { name: "Maya", initials: "M", color: "bg-pink-500" }
 const JON: TeamMember = { name: "Jon", initials: "J", color: "bg-emerald-500" }
 const ADA: TeamMember = { name: "Ada", initials: "A", color: "bg-violet-500" }
 
+export const teamMembers: TeamMember[] = [HANI, MAYA, JON, ADA]
+
 /**
  * Priority pill palette. Kept identical to the one in
  * `components/projects/project-pulse-card.tsx` so a task reads the same
@@ -19,12 +21,12 @@ export const priorityStyles: Record<TaskPriority, string> = {
 /** Column order + status-dot colour. Mirrors the 7-column Figma board. */
 export const columns: KanbanColumnDef[] = [
   { status: "Backlog", dotClass: "bg-slate-400" },
-  { status: "To Do", dotClass: "bg-slate-600" },
+  { status: "To Do", dotClass: "bg-zinc-500" },
   { status: "In Progress", dotClass: "bg-blue-500" },
   { status: "In Review", dotClass: "bg-orange-500" },
-  { status: "Approved", dotClass: "bg-emerald-500" },
-  { status: "In Dev", dotClass: "bg-violet-500" },
-  { status: "Done", dotClass: "bg-green-600" },
+  { status: "Approved", dotClass: "bg-purple-500" },
+  { status: "In Dev", dotClass: "bg-teal-500" },
+  { status: "Done", dotClass: "bg-emerald-500" },
 ]
 
 export const tasks: Task[] = [
