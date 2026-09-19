@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import {
-  User,
+  Users,
   KeyRound,
   Palette,
   Bell,
@@ -15,7 +15,7 @@ import { ProfileForm } from "./profile-form"
 type SectionId = "profile" | "account" | "appearance" | "notifications" | "display"
 
 const nav: { id: SectionId; label: string; icon: LucideIcon }[] = [
-  { id: "profile", label: "Profile", icon: User },
+  { id: "profile", label: "Profile", icon: Users },
   { id: "account", label: "Account", icon: KeyRound },
   { id: "appearance", label: "Appearance", icon: Palette },
   { id: "notifications", label: "Notifications", icon: Bell },
@@ -30,7 +30,7 @@ export function SettingsContent() {
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
       <nav
         aria-label="Settings sections"
-        className="flex shrink-0 gap-1 overflow-x-auto lg:w-48 lg:flex-col lg:overflow-visible"
+        className="flex shrink-0 gap-1 overflow-x-auto lg:w-[152px] lg:flex-col lg:gap-0 lg:overflow-visible"
       >
         {nav.map(({ id, label, icon: Icon }) => (
           <button
@@ -39,10 +39,10 @@ export function SettingsContent() {
             onClick={() => setActive(id)}
             aria-current={active === id ? "page" : undefined}
             className={cn(
-              "flex items-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-left text-sm font-medium transition-colors",
+              "flex h-8 items-center gap-2 whitespace-nowrap rounded-md p-2 text-left text-sm font-medium transition-colors",
               active === id
-                ? "bg-muted text-foreground"
-                : "text-foreground hover:bg-muted/60"
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/60"
             )}
           >
             <Icon className="size-4 shrink-0" aria-hidden />
