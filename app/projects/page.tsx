@@ -20,7 +20,10 @@ export default function ProjectsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              size="sm"
+              className="bg-emerald-600 text-white hover:bg-emerald-700"
+            >
               <SlidersHorizontal />
               Filter
             </Button>
